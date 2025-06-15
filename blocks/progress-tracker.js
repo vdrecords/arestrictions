@@ -21,27 +21,30 @@ function fetchAndUpdate() {
     const { solvedToday, unlockRemaining, totalTasks, totalSolved } = stats;
 
     // Получаем предыдущие значения из кеша
-    const prevSolvedToday = readGMNumber(STORAGE.KEYS.SOLVED_TODAY) || 0;
-    // Вычисляем разницу
-    const solvedDiff = solvedToday - prevSolvedToday;
+    let prevSolvedToday = Number(readGMNumber(STORAGE.KEYS.SOLVED_TODAY)) || 0;
+    let currSolvedToday = Number(solvedToday) || 0;
+    const solvedDiff = currSolvedToday - prevSolvedToday;
+
     // Обновляем кеш
-    writeGMNumber(STORAGE.KEYS.SOLVED_TODAY, solvedToday);
+    writeGMNumber(STORAGE.KEYS.SOLVED_TODAY, currSolvedToday);
     writeGMNumber(STORAGE.KEYS.UNLOCK_REMAINING, unlockRemaining);
     // Обновляем график
     let graphDiffs = readGMNumber(STORAGE.KEYS.GRAPH_DIFFS) || [];
     if (!Array.isArray(graphDiffs)) graphDiffs = [];
-    graphDiffs.push(solvedDiff);
-    if (graphDiffs.length > 10) graphDiffs.shift();
-    writeGMNumber(STORAGE.KEYS.GRAPH_DIFFS, graphDiffs);
+    if (!isNaN(solvedDiff)) {
+        graphDiffs.push(solvedDiff);
+        if (graphDiffs.length > 10) graphDiffs.shift();
+        writeGMNumber(STORAGE.KEYS.GRAPH_DIFFS, graphDiffs);
+    }
     drawGraph(graphDiffs);
     // Обновляем метрики
-    const avgPerMin = (graphDiffs.reduce((a, b) => a + b, 0) / graphDiffs.length).toFixed(1);
+    const avgPerMin = (graphDiffs.length ? (graphDiffs.reduce((a, b) => a + b, 0) / graphDiffs.length) : 0).toFixed(1);
     const remainingTimeText = solvedDiff > 0 ? `~${Math.ceil(unlockRemaining / Math.abs(solvedDiff))} мин` : '∞';
-    const nextThousand = Math.ceil(solvedToday / 1000) * 1000;
-    const milestoneText = `${nextThousand - solvedToday}`;
+    const nextThousand = Math.ceil(currSolvedToday / 1000) * 1000;
+    const milestoneText = `${nextThousand - currSolvedToday}`;
     const remainingTasks = (typeof totalTasks === 'number' && typeof totalSolved === 'number') ? (totalTasks - totalSolved) : 0;
     const data = {
-        solvedToday,
+        solvedToday: currSolvedToday,
         unlockRemaining,
         avgPerMin,
         remainingTimeText,
