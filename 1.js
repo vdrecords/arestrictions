@@ -8,6 +8,7 @@
 // @description  4) Блок 4: Контроль берсерка на Lichess.
 // @author       vd
 // @match        https://chessking.com/*
+// @match        https://learn.chessking.com/*
 // @match        https://lichess.org/*
 // @grant        GM.getValue
 // @grant        GM.setValue

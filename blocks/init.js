@@ -19,7 +19,7 @@ export function init() {
     console.log(`${LOGGING.PREFIXES.INIT} Текущий URL: ${currentUrl}`);
 
     // Определяем тип страницы
-    const isTaskPage = currentUrl.includes(URLS.COURSE);
+    const isTaskPage = currentUrl.includes(URLS.COURSE) || currentUrl.includes(URLS.LEARN);
     const isTestPage = currentUrl.includes(URLS.TEST);
     const isLichessPage = currentUrl.includes(URLS.LICHESS);
 

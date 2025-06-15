@@ -44,10 +44,11 @@ export const STORAGE = {
 // === Блок 3: Настройки URL-адресов ===
 // =================================
 export const URLS = {
-    COURSE: 'https://chessking.com/course/',
-    API: 'https://chessking.com/api/v1/course/',
-    LOGIN: 'https://chessking.com/login',
-    MESSAGES: 'https://chessking.com/messages',
+    COURSE: 'chessking.com/course/',
+    LEARN: 'learn.chessking.com/learning/course/',
+    API: 'chessking.com/api/v1/course/',
+    LOGIN: 'chessking.com/login',
+    MESSAGES: 'chessking.com/messages',
     LICHESS: 'lichess.org',
     GITHUB: {
         BASE: 'https://raw.githubusercontent.com/vdrecords/arestrictions/main/',
