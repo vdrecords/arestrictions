@@ -35,7 +35,8 @@ window.STORAGE = {
         UNLOCK_REMAINING: 'ck_unlock_remaining',
         TIMESTAMP: 'ck_timestamp',
         GRAPH_DIFFS: 'ck_graph_diffs',
-        ACTIONS_COST: 'ck_actions_cost'
+        ACTIONS_COST: 'ck_actions_cost',
+        TOTAL_TASKS: 'ck_total_tasks'
     },
     CACHE_TTL: 60000 // 1 минута в миллисекундах
 };

@@ -55,6 +55,7 @@ function getCourseStats() {
     const SELECTORS = window.SELECTORS;
     const STORAGE = window.STORAGE;
     const readGMNumber = window.readGMNumber;
+    const writeGMNumber = window.writeGMNumber;
     let totalSolved = 0;
     let solvedToday = 0;
     let unlockRemaining = 0;
@@ -67,8 +68,15 @@ function getCourseStats() {
                 const solved = parseInt(parts[0].trim(), 10);
                 const total = parseInt(parts[1].trim(), 10);
                 if (!isNaN(solved)) totalSolved = solved;
-                if (!isNaN(total)) totalTasks = total;
+                if (!isNaN(total)) {
+                    totalTasks = total;
+                    writeGMNumber(STORAGE.KEYS.TOTAL_TASKS || 'ck_total_tasks', totalTasks);
+                }
             }
+        } else {
+            // Fallback: берем значения из хранилища
+            totalSolved = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED) || 0;
+            totalTasks = readGMNumber(STORAGE.KEYS.TOTAL_TASKS || 'ck_total_tasks') || 0;
         }
         const unlockElem = document.querySelector(SELECTORS.UNLOCK_REMAINING);
         if (unlockElem) {
