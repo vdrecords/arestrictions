@@ -74,6 +74,7 @@ async function getCourseStats() {
                     writeGMNumber(STORAGE.KEYS.TOTAL_TASKS, totalTasks);
                     console.log('[CK DEBUG] totalTasks записан в хранилище:', totalTasks);
                 }
+                if (!isNaN(solved)) writeGMNumber(STORAGE.KEYS.TOTAL_SOLVED, totalSolved);
             }
         } else {
             console.log('[CK DEBUG] Пытаемся прочитать totalTasks и totalSolved из хранилища');
