@@ -307,6 +307,62 @@
         function buildUIandStartUpdates() {
             console.log("[Tracker] buildUIandStartUpdates: строим UI и запускаем fetchAndUpdate()");
 
+            // Создаём overlay сразу при запуске
+            let overlay = document.getElementById('ck-progress-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'ck-progress-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = '10px';
+                overlay.style.right = '10px';
+                overlay.style.backgroundColor = 'white';
+                overlay.style.border = '1px solid #ccc';
+                overlay.style.padding = '10px';
+                overlay.style.zIndex = 9999;
+                overlay.style.fontFamily = 'Arial, sans-serif';
+                overlay.style.fontSize = '12px';
+                overlay.style.color = '#000';
+                overlay.innerHTML = '<strong>Прогресс задач&nbsp;(разница за минуту)</strong><br/>';
+
+                const contentDiv = document.createElement('div');
+                contentDiv.id = 'ck-progress-content';
+
+                const canvas = document.createElement('canvas');
+                canvas.id = 'ck-progress-canvas';
+                canvas.width = 400;
+                canvas.height = 150;
+                contentDiv.appendChild(canvas);
+
+                const metricsDiv = document.createElement('div');
+                metricsDiv.id = 'ck-progress-metrics';
+                metricsDiv.style.marginTop = '0px';
+                contentDiv.appendChild(metricsDiv);
+
+                overlay.appendChild(contentDiv);
+                document.body.appendChild(overlay);
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.id = 'ck-toggle-btn';
+                toggleBtn.textContent = 'Свернуть';
+                toggleBtn.style.position = 'absolute';
+                toggleBtn.style.top = '2px';
+                toggleBtn.style.right = '2px';
+                toggleBtn.style.fontSize = '10px';
+                toggleBtn.style.padding = '2px 5px';
+                overlay.appendChild(toggleBtn);
+                toggleBtn.addEventListener('click', () => {
+                    const cd = document.getElementById('ck-progress-content');
+                    if (cd.style.display === 'none') {
+                        cd.style.display = 'block';
+                        toggleBtn.textContent = 'Свернуть';
+                    } else {
+                        cd.style.display = 'none';
+                        toggleBtn.textContent = 'Развернуть';
+                    }
+                });
+                console.log("[Tracker] Overlay создан");
+            }
+
             function fetchAndUpdate() {
                 console.log("[Tracker][fetchAndUpdate] Запуск fetch + обновление UI");
                 fetchCourseDataViaGM(true).then(data => {
@@ -413,88 +469,6 @@
                         milestoneText = `${h2} ч ${m3} мин`;
                     }
                     console.log(`[Tracker][fetchAndUpdate] milestoneText="${milestoneText}"`);
-
-                    // =====================================
-                    // === Рисуем overlay с графиком и метриками ===
-                    // =====================================
-                    let overlay = document.getElementById('ck-progress-overlay');
-                    if (!overlay) {
-                        overlay = document.createElement('div');
-                        overlay.id = 'ck-progress-overlay';
-                        overlay.style.position = 'fixed';
-                        overlay.style.top = '10px';
-                        overlay.style.right = '10px';
-                        overlay.style.backgroundColor = 'white';
-                        overlay.style.border = '1px solid #ccc';
-                        overlay.style.padding = '10px';
-                        overlay.style.zIndex = 9999;
-                        overlay.style.fontFamily = 'Arial, sans-serif';
-                        overlay.style.fontSize = '12px';
-                        overlay.style.color = '#000';
-                        overlay.innerHTML = '<strong>Прогресс задач&nbsp;(разница за минуту)</strong><br/>';
-
-                        const contentDiv = document.createElement('div');
-                        contentDiv.id = 'ck-progress-content';
-
-                        const canvas = document.createElement('canvas');
-                        canvas.id = 'ck-progress-canvas';
-                        canvas.width = 400;
-                        canvas.height = 150;
-                        contentDiv.appendChild(canvas);
-
-                        const metricsDiv = document.createElement('div');
-                        metricsDiv.id = 'ck-progress-metrics';
-                        metricsDiv.style.marginTop = '0px';
-                        contentDiv.appendChild(metricsDiv);
-
-                        overlay.appendChild(contentDiv);
-                        document.body.appendChild(overlay);
-
-                        const toggleBtn = document.createElement('button');
-                        toggleBtn.id = 'ck-toggle-btn';
-                        toggleBtn.textContent = 'Свернуть';
-                        toggleBtn.style.position = 'absolute';
-                        toggleBtn.style.top = '2px';
-                        toggleBtn.style.right = '2px';
-                        toggleBtn.style.fontSize = '10px';
-                        toggleBtn.style.padding = '2px 5px';
-                        overlay.appendChild(toggleBtn);
-                        toggleBtn.addEventListener('click', () => {
-                            const cd = document.getElementById('ck-progress-content');
-                            if (cd.style.display === 'none') {
-                                cd.style.display = 'block';
-                                toggleBtn.textContent = 'Свернуть';
-                            } else {
-                                cd.style.display = 'none';
-                                toggleBtn.textContent = 'Развернуть';
-                            }
-                        });
-                        console.log("[Tracker] Overlay создан");
-                    } else {
-                        let toggleBtn = document.getElementById('ck-toggle-btn');
-                        if (!toggleBtn) {
-                            const newBtn = document.createElement('button');
-                            newBtn.id = 'ck-toggle-btn';
-                            newBtn.textContent = 'Свернуть';
-                            newBtn.style.position = 'absolute';
-                            newBtn.style.top = '2px';
-                            newBtn.style.right = '2px';
-                            newBtn.style.fontSize = '10px';
-                            newBtn.style.padding = '2px 5px';
-                            overlay.appendChild(newBtn);
-                            newBtn.addEventListener('click', () => {
-                                const cd = document.getElementById('ck-progress-content');
-                                if (cd.style.display === 'none') {
-                                    cd.style.display = 'block';
-                                    newBtn.textContent = 'Свернуть';
-                                } else {
-                                    cd.style.display = 'none';
-                                    newBtn.textContent = 'Развернуть';
-                                }
-                            });
-                            console.log("[Tracker] Toggle-кнопка добавлена");
-                        }
-                    }
 
                     // Рисуем график
                     const canvas = document.getElementById('ck-progress-canvas');
