@@ -71,12 +71,15 @@ function getCourseStats() {
                 if (!isNaN(total)) {
                     totalTasks = total;
                     writeGMNumber(STORAGE.KEYS.TOTAL_TASKS, totalTasks);
+                    console.log('[CK DEBUG] totalTasks записан в хранилище:', totalTasks);
                 }
             }
         } else {
             // Всегда берем из хранилища, если не нашли на странице
             totalTasks = readGMNumber(STORAGE.KEYS.TOTAL_TASKS) || 0;
             totalSolved = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED) || 0;
+            console.log('[CK DEBUG] totalTasks из хранилища:', totalTasks);
+            console.log('[CK DEBUG] totalSolved из хранилища:', totalSolved);
         }
         const unlockElem = document.querySelector(SELECTORS.UNLOCK_REMAINING);
         if (unlockElem) {
