@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Global Redirect & ChessKing Tracker & Message Control (GM-хранилище для кеша)
 // @namespace    http://tampermonkey.net/
-// @version      4.8.1
+// @version      4.8.2
 // @description
 // 1) Блок 1: Глобальная проверка «До разблокировки осталось решить».
 // 2) Блок 2: Мгновенные анимации ChessKing – переопределение jQuery.animate/fadeIn/fadeOut, авто-клик «Следующее задание».
@@ -363,122 +363,198 @@
                 console.log("[Tracker] Overlay создан");
             }
 
+            // Проверяем, находимся ли мы на странице с задачами
+            const isTaskPage = window.location.href.includes('chessking.com/course/');
+
             function fetchAndUpdate() {
                 console.log("[Tracker][fetchAndUpdate] Запуск fetch + обновление UI");
-                fetchCourseDataViaGM(true).then(data => {
-                    if (!data) {
-                        console.log("[Tracker][fetchAndUpdate] fetch вернул null");
-                        return;
-                    }
-                    const { totalSolved, solvedToday, unlockRemaining } = data;
-
-                    // Обновляем кеш (fetch-based)
-                    writeGMNumber(keyCachedSolved, solvedToday);
-                    writeGMNumber(keyCachedUnlock, unlockRemaining);
-                    console.log(`[Tracker][fetchAndUpdate] Фетч: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
-
-                    // ==== Обновляем <title> ====
-                    const oldTitle = document.title.replace(/^\d+\s·\s/, '');
-                    document.title = `${unlockRemaining} · ${oldTitle}`;
-                    console.log(`[Tracker][fetchAndUpdate] Обновлён title: "${document.title}"`);
-
-                    // ==== История totalSolved для графика ====
-                    let readings = [];
-                    try {
-                        readings = JSON.parse(localStorage.getItem('ck_readings') || '[]');
-                    } catch {
-                        readings = [];
-                    }
-                    readings.push({ time: new Date().toISOString(), solved: totalSolved });
-                    if (readings.length > 60) readings = readings.slice(-60);
-                    localStorage.setItem('ck_readings', JSON.stringify(readings));
-                    console.log(`[Tracker][fetchAndUpdate] Добавили чтение: time=${readings.slice(-1)[0].time}, solved=${readings.slice(-1)[0].solved}`);
-
-                    // ==== Вычисляем diffs (интервал ≤ 90 сек) ====
-                    const diffs = [];
-                    for (let i = 1; i < readings.length; i++) {
-                        const t0 = new Date(readings[i - 1].time).getTime();
-                        const t1 = new Date(readings[i].time).getTime();
-                        if (t1 - t0 <= 90000) {
-                            diffs.push(readings[i].solved - readings[i - 1].solved);
+                
+                if (isTaskPage) {
+                    // На странице с задачами - обновляем реальные данные
+                    fetchCourseDataViaGM(true).then(data => {
+                        if (!data) {
+                            console.log("[Tracker][fetchAndUpdate] fetch вернул null");
+                            return;
                         }
-                    }
-                    console.log(`[Tracker][fetchAndUpdate] diffs (последние 5): ${diffs.slice(-5)}`);
-                    const graphDiffs = diffs.length > 30 ? diffs.slice(-30) : diffs;
+                        const { totalSolved, solvedToday, unlockRemaining } = data;
 
-                    // ==== Средняя скорость (медиана последних 10, без подряд 0) ====
-                    let lastTen = diffs.length > 10 ? diffs.slice(-10) : diffs;
-                    const filtered = [];
-                    for (let i = 0; i < lastTen.length; i++) {
-                        if (lastTen[i] === 0 && i > 0 && lastTen[i - 1] === 0) continue;
-                        filtered.push(lastTen[i]);
-                    }
-                    if (filtered.length === 0) filtered.push(...lastTen);
+                        // Обновляем кеш (fetch-based)
+                        writeGMNumber(keyCachedSolved, solvedToday);
+                        writeGMNumber(keyCachedUnlock, unlockRemaining);
+                        console.log(`[Tracker][fetchAndUpdate] Фетч: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
 
-                    let avgPerMin = 0;
-                    if (filtered.length) {
-                        const sorted = [...filtered].sort((a, b) => a - b);
-                        const mid = Math.floor(sorted.length / 2);
-                        avgPerMin = (sorted.length % 2)
-                            ? sorted[mid]
-                            : (sorted[mid - 1] + sorted[mid]) / 2;
-                        avgPerMin = Math.round(avgPerMin);
-                    }
-                    console.log(`[Tracker][fetchAndUpdate] avgPerMin=${avgPerMin}`);
+                        // ==== Обновляем <title> ====
+                        const oldTitle = document.title.replace(/^\d+\s·\s/, '');
+                        document.title = `${unlockRemaining} · ${oldTitle}`;
+                        console.log(`[Tracker][fetchAndUpdate] Обновлён title: "${document.title}"`);
 
-                    // ==== Максимальная скорость (из положительных > avgPerMin) ====
-                    const positives = lastTen.filter(x => x > 0);
-                    const candidateMax = positives.filter(x => x > avgPerMin);
-                    let maxPerMin = 0;
-                    if (candidateMax.length) {
-                        maxPerMin = Math.max(...candidateMax);
-                    } else if (positives.length) {
-                        maxPerMin = Math.max(...positives);
-                    }
-                    console.log(`[Tracker][fetchAndUpdate] maxPerMin=${maxPerMin}`);
-
-                    // ==== Общее число задач и оставшиеся задачи ====
-                    let totalCount = 0;
-                    const solvedElem = document.querySelector('span.course-overview__stats-item[title*="Решенное"] span');
-                    if (solvedElem) {
-                        const parts = solvedElem.innerText.split('/');
-                        if (parts[1]) {
-                            const t = parseInt(parts[1].trim(), 10);
-                            if (!isNaN(t)) totalCount = t;
+                        // ==== История totalSolved для графика ====
+                        let readings = [];
+                        try {
+                            readings = JSON.parse(localStorage.getItem('ck_readings') || '[]');
+                        } catch {
+                            readings = [];
                         }
-                    }
-                    const remainingTasks = totalCount - totalSolved;
-                    console.log(`[Tracker][fetchAndUpdate] totalCount=${totalCount}, remainingTasks=${remainingTasks}`);
+                        readings.push({ time: new Date().toISOString(), solved: totalSolved });
+                        if (readings.length > 60) readings = readings.slice(-60);
+                        localStorage.setItem('ck_readings', JSON.stringify(readings));
+                        console.log(`[Tracker][fetchAndUpdate] Добавили чтение: time=${readings.slice(-1)[0].time}, solved=${readings.slice(-1)[0].solved}`);
 
-                    let remainingTimeText = "нет данных";
-                    if (maxPerMin > 0) {
-                        const minsLeft = remainingTasks / maxPerMin;
-                        const h = Math.floor(minsLeft / 60);
-                        const m = Math.round(minsLeft % 60);
-                        remainingTimeText = `${h} ч ${m} мин`;
-                    }
-                    console.log(`[Tracker][fetchAndUpdate] remainingTimeText="${remainingTimeText}"`);
+                        // ==== Вычисляем diffs (интервал ≤ 90 сек) ====
+                        const diffs = [];
+                        for (let i = 1; i < readings.length; i++) {
+                            const t0 = new Date(readings[i - 1].time).getTime();
+                            const t1 = new Date(readings[i].time).getTime();
+                            if (t1 - t0 <= 90000) {
+                                diffs.push(readings[i].solved - readings[i - 1].solved);
+                            }
+                        }
+                        console.log(`[Tracker][fetchAndUpdate] diffs (последние 5): ${diffs.slice(-5)}`);
+                        const graphDiffs = diffs.length > 30 ? diffs.slice(-30) : diffs;
 
-                    const nextTh = Math.ceil(totalSolved / 1000) * 1000;
-                    const toNext = nextTh - totalSolved;
-                    let milestoneText = "нет данных";
-                    if (maxPerMin > 0) {
-                        const m2 = toNext / maxPerMin;
-                        const h2 = Math.floor(m2 / 60);
-                        const m3 = Math.round(m2 % 60);
-                        milestoneText = `${h2} ч ${m3} мин`;
-                    }
-                    console.log(`[Tracker][fetchAndUpdate] milestoneText="${milestoneText}"`);
+                        // ==== Средняя скорость (медиана последних 10, без подряд 0) ====
+                        let lastTen = diffs.length > 10 ? diffs.slice(-10) : diffs;
+                        const filtered = [];
+                        for (let i = 0; i < lastTen.length; i++) {
+                            if (lastTen[i] === 0 && i > 0 && lastTen[i - 1] === 0) continue;
+                            filtered.push(lastTen[i]);
+                        }
+                        if (filtered.length === 0) filtered.push(...lastTen);
 
-                    // Рисуем график
+                        let avgPerMin = 0;
+                        if (filtered.length) {
+                            const sorted = [...filtered].sort((a, b) => a - b);
+                            const mid = Math.floor(sorted.length / 2);
+                            avgPerMin = (sorted.length % 2)
+                                ? sorted[mid]
+                                : (sorted[mid - 1] + sorted[mid]) / 2;
+                            avgPerMin = Math.round(avgPerMin);
+                        }
+                        console.log(`[Tracker][fetchAndUpdate] avgPerMin=${avgPerMin}`);
+
+                        // ==== Максимальная скорость (из положительных > avgPerMin) ====
+                        const positives = lastTen.filter(x => x > 0);
+                        const candidateMax = positives.filter(x => x > avgPerMin);
+                        let maxPerMin = 0;
+                        if (candidateMax.length) {
+                            maxPerMin = Math.max(...candidateMax);
+                        } else if (positives.length) {
+                            maxPerMin = Math.max(...positives);
+                        }
+                        console.log(`[Tracker][fetchAndUpdate] maxPerMin=${maxPerMin}`);
+
+                        // ==== Общее число задач и оставшиеся задачи ====
+                        let totalCount = 0;
+                        const solvedElem = document.querySelector('span.course-overview__stats-item[title*="Решенное"] span');
+                        if (solvedElem) {
+                            const parts = solvedElem.innerText.split('/');
+                            if (parts[1]) {
+                                const t = parseInt(parts[1].trim(), 10);
+                                if (!isNaN(t)) totalCount = t;
+                            }
+                        }
+                        const remainingTasks = totalCount - totalSolved;
+                        console.log(`[Tracker][fetchAndUpdate] totalCount=${totalCount}, remainingTasks=${remainingTasks}`);
+
+                        let remainingTimeText = "нет данных";
+                        if (maxPerMin > 0) {
+                            const minsLeft = remainingTasks / maxPerMin;
+                            const h = Math.floor(minsLeft / 60);
+                            const m = Math.round(minsLeft % 60);
+                            remainingTimeText = `${h} ч ${m} мин`;
+                        }
+                        console.log(`[Tracker][fetchAndUpdate] remainingTimeText="${remainingTimeText}"`);
+
+                        const nextTh = Math.ceil(totalSolved / 1000) * 1000;
+                        const toNext = nextTh - totalSolved;
+                        let milestoneText = "нет данных";
+                        if (maxPerMin > 0) {
+                            const m2 = toNext / maxPerMin;
+                            const h2 = Math.floor(m2 / 60);
+                            const m3 = Math.round(m2 % 60);
+                            milestoneText = `${h2} ч ${m3} мин`;
+                        }
+                        console.log(`[Tracker][fetchAndUpdate] milestoneText="${milestoneText}"`);
+
+                        // Рисуем график
+                        const canvas = document.getElementById('ck-progress-canvas');
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                        const margin = 30;
+                        const graphW  = canvas.width - margin * 2;
+                        const graphH  = canvas.height - margin * 2;
+                        const maxDiff = Math.max(...graphDiffs, 1);
+
+                        // Горизонтальная ось
+                        ctx.beginPath();
+                        ctx.moveTo(margin, canvas.height - margin);
+                        ctx.lineTo(canvas.width - margin, canvas.height - margin);
+                        ctx.strokeStyle = '#000';
+                        ctx.stroke();
+
+                        if (graphDiffs.length) {
+                            const step = graphDiffs.length > 1 ? graphW / (graphDiffs.length - 1) : graphW;
+                            const pts = [];
+                            for (let i = 0; i < graphDiffs.length; i++) {
+                                const x = margin + i * step;
+                                const y = canvas.height - margin - (graphDiffs[i] / maxDiff) * graphH;
+                                pts.push({ x, y, v: graphDiffs[i] });
+                            }
+                            ctx.beginPath();
+                            ctx.moveTo(pts[0].x, pts[0].y);
+                            for (let i = 1; i < pts.length; i++) {
+                                ctx.lineTo(pts[i].x, pts[i].y);
+                            }
+                            ctx.strokeStyle = 'blue';
+                            ctx.stroke();
+
+                            ctx.font = "10px Arial";
+                            for (const p of pts) {
+                                ctx.fillStyle = 'red';
+                                ctx.beginPath();
+                                ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+                                ctx.fill();
+                                ctx.fillStyle = 'black';
+                                ctx.fillText(p.v, p.x - 5, p.y - 5);
+                            }
+                        } else {
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Недостаточно данных", margin, margin + 20);
+                        }
+
+                        // Обновляем метрики
+                        const metricsDiv = document.getElementById('ck-progress-metrics');
+                        metricsDiv.innerHTML = `
+                            <div>Решено задач сегодня: <strong>${solvedToday}</strong></div>
+                            <div>До разблокировки осталось решить: <strong>${unlockRemaining}</strong></div>
+                            <div>Средняя скорость: <strong>${avgPerMin}</strong> задач/мин</div>
+                            <div>Оставшееся время: <strong>${remainingTimeText}</strong></div>
+                            <div>Задач осталось: <strong>${remainingTasks}</strong></div>
+                            <div>До ${nextTh} решённых задач осталось: <strong>${milestoneText}</strong></div>
+                        `;
+                        console.log("[Tracker] UI обновлён");
+                    });
+                } else {
+                    // На других страницах - показываем тестовые данные
+                    const metricsDiv = document.getElementById('ck-progress-metrics');
+                    metricsDiv.innerHTML = `
+                        <div>Решено задач сегодня: <strong>Тест</strong></div>
+                        <div>До разблокировки осталось решить: <strong>Тест</strong></div>
+                        <div>Средняя скорость: <strong>Тест</strong> задач/мин</div>
+                        <div>Оставшееся время: <strong>Тест</strong></div>
+                        <div>Задач осталось: <strong>Тест</strong></div>
+                        <div>До следующей тысячи решённых задач осталось: <strong>Тест</strong></div>
+                    `;
+
+                    // Рисуем тестовый график
                     const canvas = document.getElementById('ck-progress-canvas');
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                     const margin = 30;
-                    const graphW  = canvas.width - margin * 2;
-                    const graphH  = canvas.height - margin * 2;
-                    const maxDiff = Math.max(...graphDiffs, 1);
+                    const graphW = canvas.width - margin * 2;
+                    const graphH = canvas.height - margin * 2;
 
                     // Горизонтальная ось
                     ctx.beginPath();
@@ -487,48 +563,16 @@
                     ctx.strokeStyle = '#000';
                     ctx.stroke();
 
-                    if (graphDiffs.length) {
-                        const step = graphDiffs.length > 1 ? graphW / (graphDiffs.length - 1) : graphW;
-                        const pts = [];
-                        for (let i = 0; i < graphDiffs.length; i++) {
-                            const x = margin + i * step;
-                            const y = canvas.height - margin - (graphDiffs[i] / maxDiff) * graphH;
-                            pts.push({ x, y, v: graphDiffs[i] });
-                        }
-                        ctx.beginPath();
-                        ctx.moveTo(pts[0].x, pts[0].y);
-                        for (let i = 1; i < pts.length; i++) {
-                            ctx.lineTo(pts[i].x, pts[i].y);
-                        }
-                        ctx.strokeStyle = 'blue';
-                        ctx.stroke();
+                    // Тестовая линия
+                    ctx.beginPath();
+                    ctx.moveTo(margin, canvas.height - margin - graphH/2);
+                    ctx.lineTo(canvas.width - margin, canvas.height - margin - graphH/2);
+                    ctx.strokeStyle = 'blue';
+                    ctx.stroke();
 
-                        ctx.font = "10px Arial";
-                        for (const p of pts) {
-                            ctx.fillStyle = 'red';
-                            ctx.beginPath();
-                            ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
-                            ctx.fill();
-                            ctx.fillStyle = 'black';
-                            ctx.fillText(p.v, p.x - 5, p.y - 5);
-                        }
-                    } else {
-                        ctx.font = "14px Arial";
-                        ctx.fillText("Недостаточно данных", margin, margin + 20);
-                    }
-
-                    // Обновляем метрики
-                    const metricsDiv = document.getElementById('ck-progress-metrics');
-                    metricsDiv.innerHTML = `
-                        <div>Решено задач сегодня: <strong>${solvedToday}</strong></div>
-                        <div>До разблокировки осталось решить: <strong>${unlockRemaining}</strong></div>
-                        <div>Средняя скорость: <strong>${avgPerMin}</strong> задач/мин</div>
-                        <div>Оставшееся время: <strong>${remainingTimeText}</strong></div>
-                        <div>Задач осталось: <strong>${remainingTasks}</strong></div>
-                        <div>До ${nextTh} решённых задач осталось: <strong>${milestoneText}</strong></div>
-                    `;
-                    console.log("[Tracker] UI обновлён");
-                });
+                    ctx.font = "14px Arial";
+                    ctx.fillText("Тестовый график", margin, margin + 20);
+                }
             }
 
             // Запускаем fetchAndUpdate сразу и затем по таймеру
