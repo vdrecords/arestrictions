@@ -46,6 +46,15 @@ export async function fetchCourseDataViaGM(forceFetch = false) {
         };
     } catch (error) {
         console.error(`${LOGGING.PREFIXES.API} Ошибка при fetch:`, error);
+        // В случае ошибки возвращаем кешированные данные, если они есть
+        if (cachedTimestamp) {
+            console.log(`${LOGGING.PREFIXES.API} Возвращаем устаревшие кешированные данные`);
+            return {
+                totalSolved: readGMNumber(STORAGE.KEYS.TOTAL_SOLVED),
+                solvedToday: readGMNumber(STORAGE.KEYS.SOLVED_TODAY),
+                unlockRemaining: readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING)
+            };
+        }
         return null;
     }
 }
@@ -58,30 +67,35 @@ export function getCourseStats() {
     let solvedToday = 0;
     let unlockRemaining = 0;
 
-    // Получаем totalSolved из DOM
-    const solvedElem = document.querySelector(SELECTORS.SOLVED_STATS);
-    if (solvedElem) {
-        const parts = solvedElem.innerText.split('/');
-        if (parts[0]) {
-            const t = parseInt(parts[0].trim(), 10);
-            if (!isNaN(t)) totalSolved = t;
+    try {
+        // Получаем totalSolved из DOM
+        const solvedElem = document.querySelector(SELECTORS.SOLVED_STATS);
+        if (solvedElem) {
+            const parts = solvedElem.innerText.split('/');
+            if (parts[0]) {
+                const t = parseInt(parts[0].trim(), 10);
+                if (!isNaN(t)) totalSolved = t;
+            }
         }
-    }
 
-    // Получаем unlockRemaining из DOM
-    const unlockElem = document.querySelector(SELECTORS.UNLOCK_REMAINING);
-    if (unlockElem) {
-        const t = parseInt(unlockElem.innerText.trim(), 10);
-        if (!isNaN(t)) unlockRemaining = t;
-    }
+        // Получаем unlockRemaining из DOM
+        const unlockElem = document.querySelector(SELECTORS.UNLOCK_REMAINING);
+        if (unlockElem) {
+            const t = parseInt(unlockElem.innerText.trim(), 10);
+            if (!isNaN(t)) unlockRemaining = t;
+        }
 
-    // Вычисляем solvedToday
-    const cachedTotal = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED);
-    if (cachedTotal > 0) {
-        solvedToday = totalSolved - cachedTotal;
-        if (solvedToday < 0) solvedToday = 0;
-    }
+        // Вычисляем solvedToday
+        const cachedTotal = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED);
+        if (cachedTotal > 0) {
+            solvedToday = totalSolved - cachedTotal;
+            if (solvedToday < 0) solvedToday = 0;
+        }
 
-    console.log(`${LOGGING.PREFIXES.API} Статистика: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
-    return { totalSolved, solvedToday, unlockRemaining };
+        console.log(`${LOGGING.PREFIXES.API} Статистика: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
+        return { totalSolved, solvedToday, unlockRemaining };
+    } catch (error) {
+        console.error(`${LOGGING.PREFIXES.API} Ошибка при получении статистики:`, error);
+        return null;
+    }
 } 

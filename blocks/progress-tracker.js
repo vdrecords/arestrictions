@@ -53,14 +53,18 @@ export function fetchAndUpdate() {
         `~${Math.ceil(unlockRemaining / Math.abs(unlockDiff))} мин` : 
         '∞';
 
+    // Вычисляем до следующей тысячи
+    const nextThousand = Math.ceil(solvedToday / 1000) * 1000;
+    const milestoneText = `${nextThousand - solvedToday}`;
+
     const data = {
         solvedToday,
         unlockRemaining,
         avgPerMin,
         remainingTimeText,
         remainingTasks: unlockRemaining,
-        milestoneText: `${1000 - (solvedToday % 1000)}`,
-        nextTh: Math.ceil(solvedToday / 1000) * 1000
+        milestoneText,
+        nextTh: nextThousand
     };
 
     updateMetrics(data);

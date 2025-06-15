@@ -21,24 +21,6 @@ export function hideMessage(message) {
     }
 }
 
-// ==== Функция: deleteMessage ====
-export function deleteMessage(message) {
-    console.log(`${LOGGING.PREFIXES.MESSAGE} deleteMessage: удаляем сообщение "${message.textContent}"`);
-
-    // Проверяем, нужно ли удалять сообщение
-    const shouldDelete = MESSAGES.FILTERS.some(filter => {
-        if (typeof filter === 'string') {
-            return message.textContent.includes(filter);
-        }
-        return filter.test(message.textContent);
-    });
-
-    if (shouldDelete) {
-        message.remove();
-        console.log(`${LOGGING.PREFIXES.MESSAGE} Сообщение удалено`);
-    }
-}
-
 // ==== Функция: filterMessages ====
 export function filterMessages() {
     console.log(`${LOGGING.PREFIXES.MESSAGE} filterMessages: фильтруем сообщения`);

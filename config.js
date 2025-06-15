@@ -1,33 +1,43 @@
-// @version      1.0.0
-// @description  Configuration settings for ChessKing Tracker
+// @version      4.8.7
+// @description  ChessKing Tracker - улучшенный трекер прогресса для ChessKing
+// @namespace    https://github.com/vd/arestrictions
+// @author       vd
+// @match        https://chessking.com/course/*
+// @match        https://chessking.com/test/*
+// @match        https://lichess.org/*
+// @connect      chessking.com
+// @connect      lichess.org
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.xmlHttpRequest
+// @run-at       document-end
 
 // =================================
 // === Блок 1: Настройки скрипта ===
 // =================================
 export const SCRIPT = {
     VERSION: '4.8.7',
-    NAME: 'Global Redirect & ChessKing Tracker & Message Control',
-    NAMESPACE: 'http://tampermonkey.net/',
+    NAME: 'ChessKing Tracker',
+    NAMESPACE: 'https://github.com/vd/arestrictions',
     AUTHOR: 'vd',
-    MATCH: 'https://chessking.com/*',
-    RUN_AT: 'document-idle',
     UPDATE_URL: 'https://raw.githubusercontent.com/vd/arestrictions/main/1.js',
-    DOWNLOAD_URL: 'https://raw.githubusercontent.com/vd/arestrictions/main/1.js'
+    DOWNLOAD_URL: 'https://github.com/vd/arestrictions/raw/main/1.js'
 };
 
 // =================================
-// === Блок 2: Настройки GM-хранилища ===
+// === Блок 2: Настройки GM Storage ===
 // =================================
 export const STORAGE = {
     KEYS: {
+        TOTAL_SOLVED: 'ck_total_solved',
         SOLVED_TODAY: 'ck_solved_today',
         UNLOCK_REMAINING: 'ck_unlock_remaining',
-        TOTAL_SOLVED: 'ck_total_solved',
         TIMESTAMP: 'ck_timestamp',
+        GRAPH_DIFFS: 'ck_graph_diffs',
         ACTIONS_COST: 'ck_actions_cost'
     },
-    CACHE_TTL: 60000, // 1 минута
-    READINGS_MAX_LENGTH: 60
+    CACHE_TTL: 60000 // 1 минута в миллисекундах
 };
 
 // =================================
@@ -61,12 +71,13 @@ export const URLS = {
 // === Блок 4: Настройки селекторов ===
 // =================================
 export const SELECTORS = {
-    SOLVED_STATS: 'span.course-overview__stats-item[title*="Решенное"] span',
-    UNLOCK_REMAINING: 'span.course-overview__stats-item[title*="До разблокировки"] span',
-    MESSAGES: '.message',
+    SOLVED_STATS: '.solved-stats',
+    SOLVED_TODAY: '.solved-today',
+    UNLOCK_REMAINING: '.unlock-remaining',
+    MESSAGE: '.message',
     BERSERK: {
-        BUTTON: '.fbt.go-berserk',
-        CONTAINER: '.rcontrols, .game__underboard__controls'
+        BUTTON: '.berserk-button',
+        CONTAINER: '.berserk-container'
     }
 };
 
@@ -75,82 +86,81 @@ export const SELECTORS = {
 // =================================
 export const UI = {
     OVERLAY: {
-        ID: 'ck-progress-overlay',
+        ID: 'ck-overlay',
         STYLE: {
-            POSITION: 'fixed',
-            TOP: '10px',
-            RIGHT: '10px',
-            BACKGROUND_COLOR: 'white',
-            BORDER: '1px solid #ccc',
-            PADDING: '10px',
-            Z_INDEX: '9999',
-            FONT_FAMILY: 'Arial, sans-serif',
-            FONT_SIZE: '12px',
-            COLOR: '#000'
+            position: 'fixed',
+            top: '10px',
+            right: '10px',
+            background: 'rgba(255, 255, 255, 0.9)',
+            padding: '10px',
+            borderRadius: '5px',
+            boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
+            zIndex: '9999',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '14px',
+            color: '#333'
         }
     },
     CONTENT: {
-        ID: 'ck-progress-content'
+        ID: 'ck-content'
     },
     CANVAS: {
-        ID: 'ck-progress-canvas',
-        WIDTH: 400,
+        ID: 'ck-graph',
+        WIDTH: 300,
         HEIGHT: 150,
-        MARGIN: 30,
+        MARGIN: 20,
         COLORS: {
-            AXIS: '#000',
-            LINE: 'blue',
-            POINT: 'red',
-            TEXT: 'black'
+            AXIS: '#ccc',
+            LINE: '#4CAF50',
+            POINT: '#2196F3',
+            TEXT: '#666'
         }
     },
     METRICS: {
-        ID: 'ck-progress-metrics',
+        ID: 'ck-metrics',
         STYLE: {
-            MARGIN_TOP: '0px'
+            marginTop: '10px',
+            lineHeight: '1.5'
         }
     },
     TOGGLE_BTN: {
-        ID: 'ck-toggle-btn',
-        STYLE: {
-            POSITION: 'absolute',
-            TOP: '2px',
-            RIGHT: '2px',
-            FONT_SIZE: '10px',
-            PADDING: '2px 5px'
-        },
+        ID: 'ck-toggle',
         TEXT: {
-            COLLAPSE: 'Свернуть',
-            EXPAND: 'Развернуть'
+            COLLAPSE: '▼',
+            EXPAND: '▶'
+        },
+        STYLE: {
+            position: 'absolute',
+            top: '5px',
+            right: '5px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '12px',
+            color: '#666'
         }
-    },
-    UPDATE_INTERVAL: 60000 // 1 минута
+    }
 };
 
 // =================================
 // === Блок 6: Настройки графика ===
 // =================================
 export const GRAPH = {
-    MAX_POINTS: 30,
-    DIFF_INTERVAL: 90000, // 90 секунд
-    MEDIAN_WINDOW: 10,
-    SPEED: {
-        MIN_INTERVAL: 90000, // 90 секунд
-        FILTER_ZEROS: true
-    }
+    MAX_POINTS: 10,
+    UPDATE_INTERVAL: 60000 // 1 минута в миллисекундах
 };
 
 // =================================
 // === Блок 7: Настройки сообщений ===
 // =================================
 export const MESSAGES = {
-    FILTER: {
-        KEYWORDS: ['спам', 'реклама'],
-        CASE_SENSITIVE: false
-    },
-    COST: {
-        PER_MESSAGE: 50
-    }
+    FILTERS: [
+        'Поздравляем',
+        'Вы решили',
+        'Новый рекорд',
+        /^\+(\d+)\s*з\.?$/,
+        /^(\d+)\s*з\.?$/
+    ]
 };
 
 // =================================
@@ -162,19 +172,18 @@ export const BERSERK = {
     },
     UI: {
         INFO_SPAN: {
-            CLASS: 'berserk-info-span',
+            CLASS: 'berserk-info',
             STYLE: {
-                FONT_SIZE: '12px',
-                MARGIN_LEFT: '10px',
-                FONT_WEIGHT: 'bold'
+                marginLeft: '5px',
+                fontSize: '12px'
             }
         },
         BUTTON: {
-            CLASS: 'berserk-controlled',
+            CLASS: 'berserk-ctrl',
             STYLE: {
                 DISABLED: {
-                    OPACITY: '0.4',
-                    CURSOR: 'not-allowed'
+                    opacity: '0.5',
+                    cursor: 'not-allowed'
                 }
             }
         }
@@ -185,15 +194,15 @@ export const BERSERK = {
 // === Блок 9: Настройки логирования ===
 // =================================
 export const LOGGING = {
+    ENABLED: true,
     PREFIXES: {
-        UNLOCK_CHECKER: '[UnlockChecker]',
-        PROGRESS_TRACKER: '[ProgressTracker]',
-        MESSAGE_CONTROL: '[MessageControl]',
-        BERSERK_CONTROL: '[BerserkControl]',
-        INIT: '[Init]',
-        API: '[API]',
-        STORAGE: '[Storage]',
-        UI: '[UI]'
-    },
-    ENABLED: true
+        INIT: '[CK Init]',
+        STORAGE: '[CK Storage]',
+        API: '[CK API]',
+        UI: '[CK UI]',
+        PROGRESS: '[CK Progress]',
+        UNLOCK: '[CK Unlock]',
+        MESSAGE: '[CK Message]',
+        BERSERK: '[CK Berserk]'
+    }
 }; 
