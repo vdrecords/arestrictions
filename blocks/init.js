@@ -1,4 +1,4 @@
-// @version      1.0.0
+// @version      4.9.0
 // @description  Initialization for ChessKing Tracker
 
 function init() {
@@ -12,9 +12,10 @@ function init() {
     console.log(`[CK Init] Текущий URL: ${currentUrl}`);
 
     // Определяем тип страницы
-    const isTaskPage = currentUrl.includes(window.URLS.COURSE) || currentUrl.includes(window.URLS.LEARN);
-    const isTestPage = currentUrl.includes(window.URLS.TEST);
-    const isLichessPage = currentUrl.includes(window.URLS.LICHESS);
+    const URLS = window.URLS;
+    const isTaskPage = currentUrl.includes(URLS.COURSE) || currentUrl.includes(URLS.LEARN);
+    const isTestPage = currentUrl.includes(URLS.TEST);
+    const isLichessPage = currentUrl.includes(URLS.LICHESS);
 
     // Запускаем соответствующие функции
     if (isTaskPage) {

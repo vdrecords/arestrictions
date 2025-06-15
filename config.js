@@ -1,4 +1,4 @@
-// @version      4.8.7
+// @version      4.9.0
 // @description  ChessKing Tracker - улучшенный трекер прогресса для ChessKing
 // @namespace    https://github.com/vdrecords/arestrictions
 // @author       vd
@@ -17,7 +17,7 @@
 // === Блок 1: Настройки скрипта ===
 // =================================
 window.SCRIPT = {
-    VERSION: '4.8.8',
+    VERSION: '4.9.0',
     NAME: 'ChessKing Tracker',
     NAMESPACE: 'https://github.com/vdrecords/arestrictions',
     AUTHOR: 'vd',
@@ -189,22 +189,5 @@ window.BERSERK = {
                 }
             }
         }
-    }
-};
-
-// =================================
-// === Блок 9: Настройки логирования ===
-// =================================
-export const LOGGING = {
-    ENABLED: true,
-    PREFIXES: {
-        INIT: '[CK Init]',
-        STORAGE: '[CK Storage]',
-        API: '[CK API]',
-        UI: '[CK UI]',
-        PROGRESS: '[CK Progress]',
-        UNLOCK: '[CK Unlock]',
-        MESSAGE: '[CK Message]',
-        BERSERK: '[CK Berserk]'
     }
 }; 

@@ -1,4 +1,4 @@
-// @version      1.0.0
+// @version      4.9.0
 // @description  Storage utilities for ChessKing Tracker
 
 // ==== Функции для работы с GM-хранилищем ====
@@ -13,9 +13,7 @@ function writeGMNumber(key, value) {
 window.writeGMNumber = writeGMNumber;
 
 function readGMNumber(key) {
-    const value = GM.getValue(key, 0);
-    console.log(`[CK Storage] Прочитано из ${key}:`, value);
-    return value;
+    return GM.getValue(key, 0);
 }
 window.readGMNumber = readGMNumber;
 
@@ -30,9 +28,7 @@ function writeGMString(key, value) {
 window.writeGMString = writeGMString;
 
 function readGMString(key) {
-    const value = GM.getValue(key, '');
-    console.log(`[CK Storage] Прочитано из ${key}:`, value);
-    return value;
+    return GM.getValue(key, '');
 }
 window.readGMString = readGMString;
 
