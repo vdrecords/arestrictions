@@ -5,6 +5,7 @@ import { URLS, LOGGING } from '../config.js';
 import { clearGMStorage } from '../storage.js';
 import { buildUIandStartUpdates } from './progress-tracker.js';
 import { filterMessages } from './message-control.js';
+import { startBerserkControl } from './berserk-control.js';
 
 // ==== Функция: init ====
 export function init() {
@@ -20,6 +21,7 @@ export function init() {
     // Определяем тип страницы
     const isTaskPage = currentUrl.includes(URLS.COURSE);
     const isTestPage = currentUrl.includes(URLS.TEST);
+    const isLichessPage = currentUrl.includes(URLS.LICHESS);
 
     // Запускаем соответствующие функции
     if (isTaskPage) {
@@ -28,6 +30,9 @@ export function init() {
     } else if (isTestPage) {
         console.log(`${LOGGING.PREFIXES.INIT} Тестовая страница, запускаем filterMessages`);
         filterMessages();
+    } else if (isLichessPage) {
+        console.log(`${LOGGING.PREFIXES.INIT} Страница Lichess, запускаем startBerserkControl`);
+        startBerserkControl();
     } else {
         console.log(`${LOGGING.PREFIXES.INIT} Неизвестный тип страницы`);
     }

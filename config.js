@@ -5,7 +5,7 @@
 // === Блок 1: Настройки скрипта ===
 // =================================
 export const SCRIPT = {
-    VERSION: '4.8.5',
+    VERSION: '4.8.7',
     NAME: 'Global Redirect & ChessKing Tracker & Message Control',
     NAMESPACE: 'http://tampermonkey.net/',
     AUTHOR: 'vd',
@@ -23,7 +23,8 @@ export const STORAGE = {
         SOLVED_TODAY: 'ck_solved_today',
         UNLOCK_REMAINING: 'ck_unlock_remaining',
         TOTAL_SOLVED: 'ck_total_solved',
-        TIMESTAMP: 'ck_timestamp'
+        TIMESTAMP: 'ck_timestamp',
+        ACTIONS_COST: 'ck_actions_cost'
     },
     CACHE_TTL: 60000, // 1 минута
     READINGS_MAX_LENGTH: 60
@@ -37,6 +38,7 @@ export const URLS = {
     API: 'https://chessking.com/api/v1/course/',
     LOGIN: 'https://chessking.com/login',
     MESSAGES: 'https://chessking.com/messages',
+    LICHESS: 'lichess.org',
     GITHUB: {
         BASE: 'https://raw.githubusercontent.com/vd/arestrictions/main/',
         MODULES: {
@@ -48,6 +50,7 @@ export const URLS = {
                 UNLOCK_CHECKER: 'blocks/unlock-checker.js',
                 PROGRESS_TRACKER: 'blocks/progress-tracker.js',
                 MESSAGE_CONTROL: 'blocks/message-control.js',
+                BERSERK_CONTROL: 'blocks/berserk-control.js',
                 INIT: 'blocks/init.js'
             }
         }
@@ -60,7 +63,11 @@ export const URLS = {
 export const SELECTORS = {
     SOLVED_STATS: 'span.course-overview__stats-item[title*="Решенное"] span',
     UNLOCK_REMAINING: 'span.course-overview__stats-item[title*="До разблокировки"] span',
-    MESSAGES: '.message'
+    MESSAGES: '.message',
+    BERSERK: {
+        BUTTON: '.fbt.go-berserk',
+        CONTAINER: '.rcontrols, .game__underboard__controls'
+    }
 };
 
 // =================================
@@ -140,17 +147,49 @@ export const MESSAGES = {
     FILTER: {
         KEYWORDS: ['спам', 'реклама'],
         CASE_SENSITIVE: false
+    },
+    COST: {
+        PER_MESSAGE: 50
     }
 };
 
 // =================================
-// === Блок 8: Настройки логирования ===
+// === Блок 8: Настройки берсерка ===
+// =================================
+export const BERSERK = {
+    COST: {
+        PER_ACTION: 10
+    },
+    UI: {
+        INFO_SPAN: {
+            CLASS: 'berserk-info-span',
+            STYLE: {
+                FONT_SIZE: '12px',
+                MARGIN_LEFT: '10px',
+                FONT_WEIGHT: 'bold'
+            }
+        },
+        BUTTON: {
+            CLASS: 'berserk-controlled',
+            STYLE: {
+                DISABLED: {
+                    OPACITY: '0.4',
+                    CURSOR: 'not-allowed'
+                }
+            }
+        }
+    }
+};
+
+// =================================
+// === Блок 9: Настройки логирования ===
 // =================================
 export const LOGGING = {
     PREFIXES: {
         UNLOCK_CHECKER: '[UnlockChecker]',
         PROGRESS_TRACKER: '[ProgressTracker]',
         MESSAGE_CONTROL: '[MessageControl]',
+        BERSERK_CONTROL: '[BerserkControl]',
         INIT: '[Init]',
         API: '[API]',
         STORAGE: '[Storage]',

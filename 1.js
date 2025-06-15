@@ -1,17 +1,20 @@
 // @name         Global Redirect & ChessKing Tracker & Message Control (GM-хранилище для кеша)
 // @namespace    http://tampermonkey.net/
-// @version      4.8.6
+// @version      4.8.7
 // @description
 // 1) Блок 1: Глобальная проверка «До разблокировки осталось решить».
 // 2) Блок 2: Трекер прогресса ChessKing (с графиком и метриками).
 // 3) Блок 3: Управление сообщениями (скрытие, удаление, фильтрация).
+// 4) Блок 4: Контроль берсерка на Lichess.
 // @author       vd
 // @match        https://chessking.com/*
+// @match        https://lichess.org/*
 // @grant        GM.getValue
 // @grant        GM.setValue
 // @grant        GM.deleteValue
 // @grant        GM.xmlHttpRequest
 // @connect      chessking.com
+// @connect      lichess.org
 // @run-at       document-idle
 // @updateURL    https://raw.githubusercontent.com/vd/arestrictions/main/1.js
 // @downloadURL  https://raw.githubusercontent.com/vd/arestrictions/main/1.js
@@ -23,6 +26,7 @@
 // @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/unlock-checker.js
 // @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/progress-tracker.js
 // @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/message-control.js
+// @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/berserk-control.js
 // @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/init.js
 
 import { SCRIPT } from './config.js';
