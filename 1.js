@@ -31,10 +31,7 @@
 // @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/init.js
 // ==/UserScript==
 
-import { SCRIPT } from './config.js';
-import { init } from './blocks/init.js';
-
-// Запускаем инициализацию
+// Вызов инициализации (init уже глобально доступен через @require)
 init();
 
 
