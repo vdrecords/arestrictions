@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Global Redirect & ChessKing Tracker & Message Control (GM-хранилище для кеша)
 // @namespace    http://tampermonkey.net/
-// @version      4.8.11
-// @description  Тест: overlay, график, метрики, логи (без зависимостей)
+// @version      4.8.12
+// @description  Тест: overlay, график, метрики, автообновление (без зависимостей)
 // @author       vd
 // @match        https://chessking.com/*
 // @match        https://learn.chessking.com/*
@@ -14,6 +14,8 @@
 (function() {
     'use strict';
     
+    let graphDiffs = [];
+
     // Overlay
     function createOverlay() {
         console.log('[CK TEST] createOverlay: создаём overlay');
@@ -60,37 +62,82 @@
         }
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Ось X
         ctx.beginPath();
-        ctx.moveTo(20, 75);
-        ctx.lineTo(280, 75);
-        ctx.strokeStyle = '#4CAF50';
+        ctx.moveTo(20, canvas.height - 20);
+        ctx.lineTo(canvas.width - 20, canvas.height - 20);
+        ctx.strokeStyle = '#ccc';
         ctx.stroke();
+        // График
+        if (graphDiffs.length) {
+            const maxDiff = Math.max(...graphDiffs, 1);
+            const step = graphDiffs.length > 1 ? (canvas.width - 40) / (graphDiffs.length - 1) : (canvas.width - 40);
+            ctx.beginPath();
+            for (let i = 0; i < graphDiffs.length; i++) {
+                const x = 20 + i * step;
+                const y = canvas.height - 20 - (graphDiffs[i] / maxDiff) * (canvas.height - 40);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#4CAF50';
+            ctx.stroke();
+            // Точки
+            ctx.fillStyle = '#2196F3';
+            for (let i = 0; i < graphDiffs.length; i++) {
+                const x = 20 + i * step;
+                const y = canvas.height - 20 - (graphDiffs[i] / maxDiff) * (canvas.height - 40);
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
         ctx.font = '14px Arial';
+        ctx.fillStyle = '#666';
         ctx.fillText('Тестовый график', 30, 30);
-        console.log('[CK TEST] drawTestGraph: график нарисован');
+        console.log('[CK TEST] drawTestGraph: график нарисован', graphDiffs);
     }
 
     // Метрики (тестовые данные)
-    function updateMetrics() {
+    function updateMetrics(data) {
         const metrics = document.getElementById('ck-metrics');
         if (metrics) {
             metrics.innerHTML = `
-                <div>Решено задач сегодня: <strong>123</strong></div>
-                <div>До разблокировки осталось решить: <strong>77</strong></div>
-                <div>Средняя скорость: <strong>5.2</strong> задач/мин</div>
-                <div>Оставшееся время: <strong>∞</strong></div>
-                <div>Задач осталось: <strong>77</strong></div>
-                <div>До следующей тысячи решённых задач осталось: <strong>877</strong></div>
+                <div>Решено задач сегодня: <strong>${data.solvedToday}</strong></div>
+                <div>До разблокировки осталось решить: <strong>${data.unlockRemaining}</strong></div>
+                <div>Средняя скорость: <strong>${data.avgPerMin}</strong> задач/мин</div>
+                <div>Оставшееся время: <strong>${data.remainingTimeText}</strong></div>
+                <div>Задач осталось: <strong>${data.unlockRemaining}</strong></div>
+                <div>До следующей тысячи решённых задач осталось: <strong>${data.milestoneText}</strong></div>
             `;
-            console.log('[CK TEST] updateMetrics: метрики обновлены');
+            console.log('[CK TEST] updateMetrics: метрики обновлены', data);
         }
     }
 
+    // Генерация тестовых данных
+    function generateTestData() {
+        const solvedToday = Math.floor(Math.random() * 200 + 100);
+        const unlockRemaining = Math.floor(Math.random() * 100 + 1);
+        const avgPerMin = (Math.random() * 10).toFixed(1);
+        const remainingTimeText = Math.random() > 0.5 ? '∞' : `~${Math.floor(Math.random() * 60)} мин`;
+        const milestoneText = Math.floor(Math.random() * 1000);
+        return { solvedToday, unlockRemaining, avgPerMin, remainingTimeText, milestoneText };
+    }
+
+    // Основная функция обновления
+    function updateAll() {
+        // Добавляем новое значение в график
+        const diff = Math.floor(Math.random() * 20 + 1);
+        graphDiffs.push(diff);
+        if (graphDiffs.length > 10) graphDiffs.shift();
+        drawTestGraph();
+        updateMetrics(generateTestData());
+    }
+
     // Запуск теста
-    console.log('[CK TEST] Старт теста: overlay, график, метрики');
+    console.log('[CK TEST] Старт теста: overlay, график, метрики, автообновление');
     createOverlay();
-    drawTestGraph();
-    updateMetrics();
+    updateAll();
+    setInterval(updateAll, 10000); // каждые 10 секунд
 })();
 
 
