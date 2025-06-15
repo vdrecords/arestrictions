@@ -1,40 +1,33 @@
 // @version      1.0.0
 // @description  Initialization for ChessKing Tracker
 
-import { URLS, LOGGING } from '../config.js';
-import { clearGMStorage } from '../storage.js';
-import { buildUIandStartUpdates } from './progress-tracker.js';
-import { filterMessages } from './message-control.js';
-import { startBerserkControl } from './berserk-control.js';
-
-// ==== Функция: init ====
 function init() {
-    console.log(`${LOGGING.PREFIXES.INIT} init: инициализация скрипта`);
+    console.log(`[CK Init] init: инициализация скрипта`);
 
     // Очищаем GM storage
-    clearGMStorage();
+    window.clearGMStorage();
 
     // Проверяем текущий URL
     const currentUrl = window.location.href;
-    console.log(`${LOGGING.PREFIXES.INIT} Текущий URL: ${currentUrl}`);
+    console.log(`[CK Init] Текущий URL: ${currentUrl}`);
 
     // Определяем тип страницы
-    const isTaskPage = currentUrl.includes(URLS.COURSE) || currentUrl.includes(URLS.LEARN);
-    const isTestPage = currentUrl.includes(URLS.TEST);
-    const isLichessPage = currentUrl.includes(URLS.LICHESS);
+    const isTaskPage = currentUrl.includes(window.URLS.COURSE) || currentUrl.includes(window.URLS.LEARN);
+    const isTestPage = currentUrl.includes(window.URLS.TEST);
+    const isLichessPage = currentUrl.includes(window.URLS.LICHESS);
 
     // Запускаем соответствующие функции
     if (isTaskPage) {
-        console.log(`${LOGGING.PREFIXES.INIT} Страница с задачами, запускаем buildUIandStartUpdates`);
-        buildUIandStartUpdates();
+        console.log(`[CK Init] Страница с задачами, запускаем buildUIandStartUpdates`);
+        window.buildUIandStartUpdates();
     } else if (isTestPage) {
-        console.log(`${LOGGING.PREFIXES.INIT} Тестовая страница, запускаем filterMessages`);
-        filterMessages();
+        console.log(`[CK Init] Тестовая страница, запускаем filterMessages`);
+        window.filterMessages();
     } else if (isLichessPage) {
-        console.log(`${LOGGING.PREFIXES.INIT} Страница Lichess, запускаем startBerserkControl`);
-        startBerserkControl();
+        console.log(`[CK Init] Страница Lichess, запускаем startBerserkControl`);
+        window.startBerserkControl();
     } else {
-        console.log(`${LOGGING.PREFIXES.INIT} Неизвестный тип страницы`);
+        console.log(`[CK Init] Неизвестный тип страницы`);
     }
 }
 window.init = init; 

@@ -1,26 +1,14 @@
 // @version      1.0.0
 // @description  Constants for ChessKing Tracker
 
-import { STORAGE, URLS, SELECTORS, UI, GRAPH, MESSAGES, LOGGING } from './config.js';
-
-export {
-    STORAGE,
-    URLS,
-    SELECTORS,
-    UI,
-    GRAPH,
-    MESSAGES,
-    LOGGING
-};
-
 // ==== Ключи для GM-хранилища ====
-export const keyCachedSolved = 'ck_solved_today';
-export const keyCachedUnlock = 'ck_unlock_remaining';
-export const keyCachedTotal = 'ck_total_solved';
-export const keyCachedTimestamp = 'ck_timestamp';
+window.keyCachedSolved = 'ck_solved_today';
+window.keyCachedUnlock = 'ck_unlock_remaining';
+window.keyCachedTotal = 'ck_total_solved';
+window.keyCachedTimestamp = 'ck_timestamp';
 
 // ==== URL-адреса ====
-export const URLS = {
+window.URLS = {
     COURSE: 'https://chessking.com/course/',
     API: 'https://chessking.com/api/v1/course/',
     LOGIN: 'https://chessking.com/login',
