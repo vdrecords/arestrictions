@@ -74,6 +74,7 @@ export const SELECTORS = {
     SOLVED_STATS: '.solved-stats',
     SOLVED_TODAY: '.solved-today',
     UNLOCK_REMAINING: '.unlock-remaining',
+    TOTAL_TASKS: 'span.course-overview__stats-item[title*="Решенное и общее количество упражнений"] span',
     MESSAGE: '.message',
     BERSERK: {
         BUTTON: '.berserk-button',

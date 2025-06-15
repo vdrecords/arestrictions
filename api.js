@@ -66,15 +66,18 @@ export function getCourseStats() {
     let totalSolved = 0;
     let solvedToday = 0;
     let unlockRemaining = 0;
+    let totalTasks = 0;
 
     try {
-        // Получаем totalSolved из DOM
-        const solvedElem = document.querySelector(SELECTORS.SOLVED_STATS);
+        // Получаем totalSolved и totalTasks из DOM
+        const solvedElem = document.querySelector(SELECTORS.TOTAL_TASKS);
         if (solvedElem) {
             const parts = solvedElem.innerText.split('/');
-            if (parts[0]) {
-                const t = parseInt(parts[0].trim(), 10);
-                if (!isNaN(t)) totalSolved = t;
+            if (parts[0] && parts[1]) {
+                const solved = parseInt(parts[0].trim(), 10);
+                const total = parseInt(parts[1].trim(), 10);
+                if (!isNaN(solved)) totalSolved = solved;
+                if (!isNaN(total)) totalTasks = total;
             }
         }
 
@@ -92,8 +95,13 @@ export function getCourseStats() {
             if (solvedToday < 0) solvedToday = 0;
         }
 
-        console.log(`${LOGGING.PREFIXES.API} Статистика: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
-        return { totalSolved, solvedToday, unlockRemaining };
+        // Если все задачи решены, устанавливаем unlockRemaining в 0
+        if (totalSolved === totalTasks && totalTasks > 0) {
+            unlockRemaining = 0;
+        }
+
+        console.log(`${LOGGING.PREFIXES.API} Статистика: totalSolved=${totalSolved}, totalTasks=${totalTasks}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
+        return { totalSolved, totalTasks, solvedToday, unlockRemaining };
     } catch (error) {
         console.error(`${LOGGING.PREFIXES.API} Ошибка при получении статистики:`, error);
         return null;

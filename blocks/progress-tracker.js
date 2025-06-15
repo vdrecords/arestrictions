@@ -49,13 +49,19 @@ export function fetchAndUpdate() {
 
     // Обновляем метрики
     const avgPerMin = (graphDiffs.reduce((a, b) => a + b, 0) / graphDiffs.length).toFixed(1);
-    const remainingTimeText = unlockDiff < 0 ? 
-        `~${Math.ceil(unlockRemaining / Math.abs(unlockDiff))} мин` : 
-        '∞';
+    
+    // Если все задачи решены, показываем "Разблокировано"
+    const remainingTimeText = unlockRemaining === 0 ? 
+        'Разблокировано' : 
+        (unlockDiff < 0 ? 
+            `~${Math.ceil(unlockRemaining / Math.abs(unlockDiff))} мин` : 
+            '∞');
 
     // Вычисляем до следующей тысячи
     const nextThousand = Math.ceil(solvedToday / 1000) * 1000;
-    const milestoneText = `${nextThousand - solvedToday}`;
+    const milestoneText = unlockRemaining === 0 ? 
+        'Все задачи решены' : 
+        `${nextThousand - solvedToday}`;
 
     const data = {
         solvedToday,
