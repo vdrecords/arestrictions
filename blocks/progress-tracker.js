@@ -8,6 +8,8 @@ function buildUIandStartUpdates() {
 }
 window.buildUIandStartUpdates = buildUIandStartUpdates;
 
+let sessionGraphDiffs = [];
+
 function fetchAndUpdate() {
     const getCourseStats = window.getCourseStats;
     const drawGraph = window.drawGraph;
@@ -20,25 +22,21 @@ function fetchAndUpdate() {
     if (!stats) return;
     const { solvedToday, unlockRemaining, totalTasks, totalSolved } = stats;
 
-    // Получаем предыдущие значения из кеша
     let prevSolvedToday = Number(readGMNumber(STORAGE.KEYS.SOLVED_TODAY)) || 0;
     let currSolvedToday = Number(solvedToday) || 0;
     const solvedDiff = currSolvedToday - prevSolvedToday;
 
-    // Обновляем кеш
     writeGMNumber(STORAGE.KEYS.SOLVED_TODAY, currSolvedToday);
     writeGMNumber(STORAGE.KEYS.UNLOCK_REMAINING, unlockRemaining);
-    // Обновляем график
-    let graphDiffs = readGMNumber(STORAGE.KEYS.GRAPH_DIFFS) || [];
-    if (!Array.isArray(graphDiffs)) graphDiffs = [];
+
+    // Работаем только с переменной сессии
     if (!isNaN(solvedDiff)) {
-        graphDiffs.push(solvedDiff);
-        if (graphDiffs.length > 10) graphDiffs.shift();
-        writeGMNumber(STORAGE.KEYS.GRAPH_DIFFS, graphDiffs);
+        sessionGraphDiffs.push(solvedDiff);
+        if (sessionGraphDiffs.length > 10) sessionGraphDiffs.shift();
     }
-    drawGraph(graphDiffs);
-    // Обновляем метрики
-    const avgPerMin = (graphDiffs.length ? (graphDiffs.reduce((a, b) => a + b, 0) / graphDiffs.length) : 0).toFixed(1);
+    drawGraph(sessionGraphDiffs);
+
+    const avgPerMin = (sessionGraphDiffs.length ? (sessionGraphDiffs.reduce((a, b) => a + b, 0) / sessionGraphDiffs.length) : 0).toFixed(1);
     const remainingTimeText = solvedDiff > 0 ? `~${Math.ceil(unlockRemaining / Math.abs(solvedDiff))} мин` : '∞';
     const nextThousand = Math.ceil(currSolvedToday / 1000) * 1000;
     const milestoneText = `${nextThousand - currSolvedToday}`;

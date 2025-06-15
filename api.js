@@ -70,13 +70,13 @@ function getCourseStats() {
                 if (!isNaN(solved)) totalSolved = solved;
                 if (!isNaN(total)) {
                     totalTasks = total;
-                    writeGMNumber(STORAGE.KEYS.TOTAL_TASKS || 'ck_total_tasks', totalTasks);
+                    writeGMNumber(STORAGE.KEYS.TOTAL_TASKS, totalTasks);
                 }
             }
         } else {
-            // Fallback: берем значения из хранилища
+            // Всегда берем из хранилища, если не нашли на странице
+            totalTasks = readGMNumber(STORAGE.KEYS.TOTAL_TASKS) || 0;
             totalSolved = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED) || 0;
-            totalTasks = readGMNumber(STORAGE.KEYS.TOTAL_TASKS || 'ck_total_tasks') || 0;
         }
         const unlockElem = document.querySelector(SELECTORS.UNLOCK_REMAINING);
         if (unlockElem) {
