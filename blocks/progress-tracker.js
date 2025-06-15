@@ -5,6 +5,7 @@ import { SELECTORS, STORAGE, LOGGING } from '../config.js';
 import { writeGMNumber, readGMNumber } from '../storage.js';
 import { createOverlay, drawGraph, updateMetrics } from '../ui.js';
 import { checkUnlockRemaining } from './unlock-checker.js';
+import { getCourseStats } from '../api.js';
 
 // ==== Функция: buildUIandStartUpdates ====
 export function buildUIandStartUpdates() {
@@ -22,9 +23,13 @@ export function buildUIandStartUpdates() {
 export function fetchAndUpdate() {
     console.log(`${LOGGING.PREFIXES.PROGRESS} fetchAndUpdate: обновляем данные`);
 
-    // Получаем текущие значения
-    const solvedToday = parseInt(document.querySelector(SELECTORS.SOLVED_TODAY).textContent.trim(), 10);
-    const unlockRemaining = checkUnlockRemaining();
+    // Получаем текущие значения через getCourseStats
+    const stats = getCourseStats();
+    if (!stats) {
+        console.log(`${LOGGING.PREFIXES.PROGRESS} Нет данных для обновления`);
+        return;
+    }
+    const { solvedToday, unlockRemaining, totalTasks } = stats;
 
     // Получаем предыдущие значения из кеша
     const prevSolvedToday = readGMNumber(STORAGE.KEYS.SOLVED_TODAY) || 0;
@@ -58,7 +63,7 @@ export function fetchAndUpdate() {
             '∞');
 
     // Вычисляем до следующей тысячи
-    const nextThousand = Math.ceil(solvedToday / 1000) * 1000;
+    const nextThousand = totalTasks ? Math.ceil(solvedToday / 1000) * 1000 : 0;
     const milestoneText = unlockRemaining === 0 ? 
         'Все задачи решены' : 
         `${nextThousand - solvedToday}`;
