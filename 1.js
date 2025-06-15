@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Global Redirect & ChessKing Tracker & Message Control (GM-хранилище для кеша)
 // @namespace    http://tampermonkey.net/
-// @version      4.8.10
-// @description  Тест: только график и логи
+// @version      4.8.11
+// @description  Тест: overlay, график, метрики, логи (без зависимостей)
 // @author       vd
 // @match        https://chessking.com/*
 // @match        https://learn.chessking.com/*
@@ -14,7 +14,7 @@
 (function() {
     'use strict';
     
-    // Минимальный overlay и тестовый график
+    // Overlay
     function createOverlay() {
         console.log('[CK TEST] createOverlay: создаём overlay');
         let overlay = document.getElementById('ck-overlay');
@@ -32,12 +32,22 @@
             overlay.style.fontFamily = 'Arial, sans-serif';
             overlay.style.fontSize = '14px';
             overlay.style.color = '#333';
-            overlay.innerHTML = '<strong>Тестовый график</strong><br/>';
+            overlay.innerHTML = '<strong>Тестовый график и метрики</strong><br/>';
             document.body.appendChild(overlay);
+        }
+        // Метрики
+        let metrics = document.getElementById('ck-metrics');
+        if (!metrics) {
+            metrics = document.createElement('div');
+            metrics.id = 'ck-metrics';
+            metrics.style.marginTop = '10px';
+            metrics.style.lineHeight = '1.5';
+            overlay.appendChild(metrics);
         }
         return overlay;
     }
 
+    // График
     function drawTestGraph() {
         const overlay = createOverlay();
         let canvas = document.getElementById('ck-graph');
@@ -60,9 +70,27 @@
         console.log('[CK TEST] drawTestGraph: график нарисован');
     }
 
+    // Метрики (тестовые данные)
+    function updateMetrics() {
+        const metrics = document.getElementById('ck-metrics');
+        if (metrics) {
+            metrics.innerHTML = `
+                <div>Решено задач сегодня: <strong>123</strong></div>
+                <div>До разблокировки осталось решить: <strong>77</strong></div>
+                <div>Средняя скорость: <strong>5.2</strong> задач/мин</div>
+                <div>Оставшееся время: <strong>∞</strong></div>
+                <div>Задач осталось: <strong>77</strong></div>
+                <div>До следующей тысячи решённых задач осталось: <strong>877</strong></div>
+            `;
+            console.log('[CK TEST] updateMetrics: метрики обновлены');
+        }
+    }
+
     // Запуск теста
-    console.log('[CK TEST] Старт теста: только overlay и график');
+    console.log('[CK TEST] Старт теста: overlay, график, метрики');
+    createOverlay();
     drawTestGraph();
+    updateMetrics();
 })();
 
 
