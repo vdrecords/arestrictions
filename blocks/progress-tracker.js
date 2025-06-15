@@ -4,7 +4,7 @@
 async function buildUIandStartUpdates() {
     window.createOverlay();
     await fetchAndUpdate();
-    setInterval(fetchAndUpdate, 60000);
+    setInterval(async () => { await fetchAndUpdate(); }, 60000);
 }
 window.buildUIandStartUpdates = buildUIandStartUpdates;
 
