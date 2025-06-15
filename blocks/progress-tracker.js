@@ -1,16 +1,16 @@
 // @version      4.9.0
 // @description  Progress tracker for ChessKing Tracker
 
-function buildUIandStartUpdates() {
+async function buildUIandStartUpdates() {
     window.createOverlay();
-    fetchAndUpdate();
+    await fetchAndUpdate();
     setInterval(fetchAndUpdate, 60000);
 }
 window.buildUIandStartUpdates = buildUIandStartUpdates;
 
 let sessionGraphDiffs = [];
 
-function fetchAndUpdate() {
+async function fetchAndUpdate() {
     const getCourseStats = window.getCourseStats;
     const drawGraph = window.drawGraph;
     const updateMetrics = window.updateMetrics;
@@ -18,11 +18,11 @@ function fetchAndUpdate() {
     const writeGMNumber = window.writeGMNumber;
     const STORAGE = window.STORAGE;
 
-    const stats = getCourseStats();
+    const stats = await getCourseStats();
     if (!stats) return;
     const { solvedToday, unlockRemaining, totalTasks, totalSolved } = stats;
 
-    let prevSolvedToday = Number(readGMNumber(STORAGE.KEYS.SOLVED_TODAY)) || 0;
+    let prevSolvedToday = Number(await readGMNumber(STORAGE.KEYS.SOLVED_TODAY)) || 0;
     let currSolvedToday = Number(solvedToday) || 0;
     const solvedDiff = currSolvedToday - prevSolvedToday;
 

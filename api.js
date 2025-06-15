@@ -1,21 +1,21 @@
 // @version      4.9.0
 // @description  API and data utilities for ChessKing Tracker
 
-function fetchCourseDataViaGM(forceFetch = false) {
+async function fetchCourseDataViaGM(forceFetch = false) {
     const STORAGE = window.STORAGE;
     const URLS = window.URLS;
     const readGMNumber = window.readGMNumber;
     const writeGMNumber = window.writeGMNumber;
-    const cachedTimestamp = readGMNumber(STORAGE.KEYS.TIMESTAMP);
+    const cachedTimestamp = await readGMNumber(STORAGE.KEYS.TIMESTAMP);
     const now = Date.now();
     const cacheAge = now - cachedTimestamp;
     const cacheValid = cacheAge < STORAGE.CACHE_TTL;
 
     if (!forceFetch && cacheValid) {
         return {
-            totalSolved: readGMNumber(STORAGE.KEYS.TOTAL_SOLVED),
-            solvedToday: readGMNumber(STORAGE.KEYS.SOLVED_TODAY),
-            unlockRemaining: readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING)
+            totalSolved: await readGMNumber(STORAGE.KEYS.TOTAL_SOLVED),
+            solvedToday: await readGMNumber(STORAGE.KEYS.SOLVED_TODAY),
+            unlockRemaining: await readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING)
         };
     }
     try {
@@ -35,12 +35,12 @@ function fetchCourseDataViaGM(forceFetch = false) {
                     unlockRemaining: data.unlockRemaining
                 };
             })
-            .catch(error => {
+            .catch(async error => {
                 if (cachedTimestamp) {
                     return {
-                        totalSolved: readGMNumber(STORAGE.KEYS.TOTAL_SOLVED),
-                        solvedToday: readGMNumber(STORAGE.KEYS.SOLVED_TODAY),
-                        unlockRemaining: readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING)
+                        totalSolved: await readGMNumber(STORAGE.KEYS.TOTAL_SOLVED),
+                        solvedToday: await readGMNumber(STORAGE.KEYS.SOLVED_TODAY),
+                        unlockRemaining: await readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING)
                     };
                 }
                 return null;
@@ -51,7 +51,7 @@ function fetchCourseDataViaGM(forceFetch = false) {
 }
 window.fetchCourseDataViaGM = fetchCourseDataViaGM;
 
-function getCourseStats() {
+async function getCourseStats() {
     console.log('[CK DEBUG] getCourseStats вызвана');
     const SELECTORS = window.SELECTORS;
     const STORAGE = window.STORAGE;
@@ -77,8 +77,8 @@ function getCourseStats() {
             }
         } else {
             console.log('[CK DEBUG] Пытаемся прочитать totalTasks и totalSolved из хранилища');
-            totalTasks = readGMNumber(STORAGE.KEYS.TOTAL_TASKS) || 0;
-            totalSolved = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED) || 0;
+            totalTasks = await readGMNumber(STORAGE.KEYS.TOTAL_TASKS) || 0;
+            totalSolved = await readGMNumber(STORAGE.KEYS.TOTAL_SOLVED) || 0;
             console.log('[CK DEBUG] totalTasks из хранилища:', totalTasks);
             console.log('[CK DEBUG] totalSolved из хранилища:', totalSolved);
         }
@@ -87,7 +87,7 @@ function getCourseStats() {
             const t = parseInt(unlockElem.innerText.trim(), 10);
             if (!isNaN(t)) unlockRemaining = t;
         }
-        const cachedTotal = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED);
+        const cachedTotal = await readGMNumber(STORAGE.KEYS.TOTAL_SOLVED);
         if (cachedTotal > 0) {
             solvedToday = totalSolved - cachedTotal;
             if (solvedToday < 0) solvedToday = 0;

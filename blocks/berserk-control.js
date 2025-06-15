@@ -1,20 +1,20 @@
 // @version      4.9.0
 // @description  Berserk control for ChessKing Tracker
 
-function getActionBalance() {
+async function getActionBalance() {
     const STORAGE = window.STORAGE;
     const readGMNumber = window.readGMNumber;
-    const solved = readGMNumber(STORAGE.KEYS.SOLVED_TODAY) || 0;
-    const cost = readGMNumber(STORAGE.KEYS.ACTIONS_COST) || 0;
+    const solved = await readGMNumber(STORAGE.KEYS.SOLVED_TODAY) || 0;
+    const cost = await readGMNumber(STORAGE.KEYS.ACTIONS_COST) || 0;
     return solved - cost;
 }
 window.getActionBalance = getActionBalance;
 
-function spendOnAction(actionCost) {
+async function spendOnAction(actionCost) {
     const STORAGE = window.STORAGE;
     const readGMNumber = window.readGMNumber;
     const writeGMNumber = window.writeGMNumber;
-    const currentTotalCost = readGMNumber(STORAGE.KEYS.ACTIONS_COST) || 0;
+    const currentTotalCost = await readGMNumber(STORAGE.KEYS.ACTIONS_COST) || 0;
     writeGMNumber(STORAGE.KEYS.ACTIONS_COST, currentTotalCost + actionCost);
 }
 window.spendOnAction = spendOnAction;
