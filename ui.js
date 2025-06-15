@@ -88,7 +88,7 @@ function updateMetrics(data) {
         <div>До разблокировки осталось решить: <strong>${data.unlockRemaining}</strong></div>
         <div>Средняя скорость: <strong>${data.avgPerMin}</strong> задач/мин</div>
         <div>Оставшееся время: <strong>${data.remainingTimeText}</strong></div>
-        <div>Задач осталось: <strong>${data.unlockRemaining}</strong></div>
+        <div>Задач осталось: <strong>${data.remainingTasks}</strong></div>
         <div>До следующей тысячи решённых задач осталось: <strong>${data.milestoneText}</strong></div>
     `;
 }

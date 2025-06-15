@@ -18,7 +18,7 @@ function fetchAndUpdate() {
 
     const stats = getCourseStats();
     if (!stats) return;
-    const { solvedToday, unlockRemaining } = stats;
+    const { solvedToday, unlockRemaining, totalTasks, totalSolved } = stats;
 
     // Получаем предыдущие значения из кеша
     const prevSolvedToday = readGMNumber(STORAGE.KEYS.SOLVED_TODAY) || 0;
@@ -39,13 +39,15 @@ function fetchAndUpdate() {
     const remainingTimeText = solvedDiff > 0 ? `~${Math.ceil(unlockRemaining / Math.abs(solvedDiff))} мин` : '∞';
     const nextThousand = Math.ceil(solvedToday / 1000) * 1000;
     const milestoneText = `${nextThousand - solvedToday}`;
+    const remainingTasks = (typeof totalTasks === 'number' && typeof totalSolved === 'number') ? (totalTasks - totalSolved) : 0;
     const data = {
         solvedToday,
         unlockRemaining,
         avgPerMin,
         remainingTimeText,
         milestoneText,
-        nextTh: nextThousand
+        nextTh: nextThousand,
+        remainingTasks
     };
     updateMetrics(data);
 }
