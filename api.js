@@ -1,43 +1,43 @@
 // @version      1.0.0
 // @description  API and data utilities for ChessKing Tracker
 
-import { URLS, SELECTORS } from './constants.js';
+import { URLS, SELECTORS, STORAGE, LOGGING } from './config.js';
 import { writeGMNumber, readGMNumber } from './storage.js';
 
 // ==== Функция: fetchCourseDataViaGM ====
 export async function fetchCourseDataViaGM(forceFetch = false) {
-    console.log("[API] fetchCourseDataViaGM: forceFetch =", forceFetch);
+    console.log(`${LOGGING.PREFIXES.API} fetchCourseDataViaGM: forceFetch =`, forceFetch);
 
     // Проверяем, есть ли кеш и не устарел ли он
-    const cachedTimestamp = readGMNumber('ck_timestamp');
+    const cachedTimestamp = readGMNumber(STORAGE.KEYS.TIMESTAMP);
     const now = Date.now();
     const cacheAge = now - cachedTimestamp;
-    const cacheValid = cacheAge < 60000; // 1 минута
+    const cacheValid = cacheAge < STORAGE.CACHE_TTL;
 
     if (!forceFetch && cacheValid) {
-        console.log("[API] Используем кеш (возраст:", Math.round(cacheAge / 1000), "сек)");
+        console.log(`${LOGGING.PREFIXES.API} Используем кеш (возраст:`, Math.round(cacheAge / 1000), "сек)");
         return {
-            totalSolved: readGMNumber('ck_total_solved'),
-            solvedToday: readGMNumber('ck_solved_today'),
-            unlockRemaining: readGMNumber('ck_unlock_remaining')
+            totalSolved: readGMNumber(STORAGE.KEYS.TOTAL_SOLVED),
+            solvedToday: readGMNumber(STORAGE.KEYS.SOLVED_TODAY),
+            unlockRemaining: readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING)
         };
     }
 
     // Если кеш устарел или forceFetch=true, делаем fetch
-    console.log("[API] Делаем fetch (кеш устарел или forceFetch=true)");
+    console.log(`${LOGGING.PREFIXES.API} Делаем fetch (кеш устарел или forceFetch=true)`);
     try {
         const response = await fetch(URLS.API);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("[API] Получены данные:", data);
+        console.log(`${LOGGING.PREFIXES.API} Получены данные:`, data);
 
         // Обновляем кеш
-        writeGMNumber('ck_total_solved', data.totalSolved);
-        writeGMNumber('ck_solved_today', data.solvedToday);
-        writeGMNumber('ck_unlock_remaining', data.unlockRemaining);
-        writeGMNumber('ck_timestamp', now);
+        writeGMNumber(STORAGE.KEYS.TOTAL_SOLVED, data.totalSolved);
+        writeGMNumber(STORAGE.KEYS.SOLVED_TODAY, data.solvedToday);
+        writeGMNumber(STORAGE.KEYS.UNLOCK_REMAINING, data.unlockRemaining);
+        writeGMNumber(STORAGE.KEYS.TIMESTAMP, now);
 
         return {
             totalSolved: data.totalSolved,
@@ -45,14 +45,14 @@ export async function fetchCourseDataViaGM(forceFetch = false) {
             unlockRemaining: data.unlockRemaining
         };
     } catch (error) {
-        console.error("[API] Ошибка при fetch:", error);
+        console.error(`${LOGGING.PREFIXES.API} Ошибка при fetch:`, error);
         return null;
     }
 }
 
 // ==== Функция: getCourseStats ====
 export function getCourseStats() {
-    console.log("[API] getCourseStats: получаем статистику из DOM");
+    console.log(`${LOGGING.PREFIXES.API} getCourseStats: получаем статистику из DOM`);
 
     let totalSolved = 0;
     let solvedToday = 0;
@@ -76,12 +76,12 @@ export function getCourseStats() {
     }
 
     // Вычисляем solvedToday
-    const cachedTotal = readGMNumber('ck_total_solved');
+    const cachedTotal = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED);
     if (cachedTotal > 0) {
         solvedToday = totalSolved - cachedTotal;
         if (solvedToday < 0) solvedToday = 0;
     }
 
-    console.log(`[API] Статистика: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
+    console.log(`${LOGGING.PREFIXES.API} Статистика: totalSolved=${totalSolved}, solvedToday=${solvedToday}, unlockRemaining=${unlockRemaining}`);
     return { totalSolved, solvedToday, unlockRemaining };
 } 

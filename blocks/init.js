@@ -1,37 +1,34 @@
 // @version      1.0.0
-// @description  Initialization block for ChessKing Tracker
+// @description  Initialization for ChessKing Tracker
 
-import { URLS } from '../constants.js';
+import { URLS, LOGGING } from '../config.js';
 import { clearGMStorage } from '../storage.js';
-import { checkUnlockRemaining } from './unlock-checker.js';
 import { buildUIandStartUpdates } from './progress-tracker.js';
-import { hideMessages, deleteMessages, filterMessages } from './message-control.js';
+import { filterMessages } from './message-control.js';
 
 // ==== Функция: init ====
 export function init() {
-    console.log("[Init] init: инициализация скрипта");
+    console.log(`${LOGGING.PREFIXES.INIT} init: инициализация скрипта`);
 
-    // Очищаем кеш при запуске
+    // Очищаем GM storage
     clearGMStorage();
 
-    // Проверяем URL
-    const url = window.location.href;
-    console.log("[Init] Текущий URL:", url);
+    // Проверяем текущий URL
+    const currentUrl = window.location.href;
+    console.log(`${LOGGING.PREFIXES.INIT} Текущий URL: ${currentUrl}`);
 
-    // Блок 1: Глобальная проверка «До разблокировки осталось решить»
-    if (url.includes(URLS.COURSE)) {
-        checkUnlockRemaining();
-    }
+    // Определяем тип страницы
+    const isTaskPage = currentUrl.includes(URLS.COURSE);
+    const isTestPage = currentUrl.includes(URLS.TEST);
 
-    // Блок 2: Трекер прогресса ChessKing
-    if (url.includes(URLS.COURSE)) {
+    // Запускаем соответствующие функции
+    if (isTaskPage) {
+        console.log(`${LOGGING.PREFIXES.INIT} Страница с задачами, запускаем buildUIandStartUpdates`);
         buildUIandStartUpdates();
-    }
-
-    // Блок 3: Управление сообщениями
-    if (url.includes(URLS.MESSAGES)) {
-        hideMessages();
-        deleteMessages();
+    } else if (isTestPage) {
+        console.log(`${LOGGING.PREFIXES.INIT} Тестовая страница, запускаем filterMessages`);
         filterMessages();
+    } else {
+        console.log(`${LOGGING.PREFIXES.INIT} Неизвестный тип страницы`);
     }
 } 

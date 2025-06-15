@@ -1,38 +1,54 @@
 // @version      1.0.0
-// @description  Message control block for ChessKing Tracker
+// @description  Message control for ChessKing Tracker
 
-// ==== Функция: hideMessages ====
-export function hideMessages() {
-    console.log("[MessageControl] hideMessages: скрываем сообщения");
+import { SELECTORS, MESSAGES, LOGGING } from '../config.js';
 
-    const messages = document.querySelectorAll('.message');
-    messages.forEach(msg => {
-        msg.style.display = 'none';
+// ==== Функция: hideMessage ====
+export function hideMessage(message) {
+    console.log(`${LOGGING.PREFIXES.MESSAGE} hideMessage: скрываем сообщение "${message.textContent}"`);
+
+    // Проверяем, нужно ли скрывать сообщение
+    const shouldHide = MESSAGES.FILTERS.some(filter => {
+        if (typeof filter === 'string') {
+            return message.textContent.includes(filter);
+        }
+        return filter.test(message.textContent);
     });
-    console.log(`[MessageControl] Скрыто сообщений: ${messages.length}`);
+
+    if (shouldHide) {
+        message.style.display = 'none';
+        console.log(`${LOGGING.PREFIXES.MESSAGE} Сообщение скрыто`);
+    }
 }
 
-// ==== Функция: deleteMessages ====
-export function deleteMessages() {
-    console.log("[MessageControl] deleteMessages: удаляем сообщения");
+// ==== Функция: deleteMessage ====
+export function deleteMessage(message) {
+    console.log(`${LOGGING.PREFIXES.MESSAGE} deleteMessage: удаляем сообщение "${message.textContent}"`);
 
-    const messages = document.querySelectorAll('.message');
-    messages.forEach(msg => {
-        msg.remove();
+    // Проверяем, нужно ли удалять сообщение
+    const shouldDelete = MESSAGES.FILTERS.some(filter => {
+        if (typeof filter === 'string') {
+            return message.textContent.includes(filter);
+        }
+        return filter.test(message.textContent);
     });
-    console.log(`[MessageControl] Удалено сообщений: ${messages.length}`);
+
+    if (shouldDelete) {
+        message.remove();
+        console.log(`${LOGGING.PREFIXES.MESSAGE} Сообщение удалено`);
+    }
 }
 
 // ==== Функция: filterMessages ====
 export function filterMessages() {
-    console.log("[MessageControl] filterMessages: фильтруем сообщения");
+    console.log(`${LOGGING.PREFIXES.MESSAGE} filterMessages: фильтруем сообщения`);
 
-    const messages = document.querySelectorAll('.message');
-    messages.forEach(msg => {
-        const text = msg.innerText.toLowerCase();
-        if (text.includes('спам') || text.includes('реклама')) {
-            msg.style.display = 'none';
-        }
+    // Находим все сообщения
+    const messages = document.querySelectorAll(SELECTORS.MESSAGE);
+    console.log(`${LOGGING.PREFIXES.MESSAGE} Найдено сообщений: ${messages.length}`);
+
+    // Фильтруем сообщения
+    messages.forEach(message => {
+        hideMessage(message);
     });
-    console.log(`[MessageControl] Отфильтровано сообщений: ${messages.length}`);
 } 

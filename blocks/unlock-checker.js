@@ -1,32 +1,37 @@
 // @version      1.0.0
-// @description  Unlock checker block for ChessKing Tracker
+// @description  Unlock checker for ChessKing Tracker
 
-import { SELECTORS } from '../constants.js';
+import { SELECTORS, LOGGING } from '../config.js';
 import { writeGMNumber } from '../storage.js';
 
 // ==== Функция: checkUnlockRemaining ====
 export function checkUnlockRemaining() {
-    console.log("[UnlockChecker] checkUnlockRemaining: проверяем оставшиеся задачи");
+    console.log(`${LOGGING.PREFIXES.UNLOCK} checkUnlockRemaining: проверяем оставшиеся задачи для разблокировки`);
 
-    // Получаем unlockRemaining из DOM
-    const unlockElem = document.querySelector(SELECTORS.UNLOCK_REMAINING);
-    if (!unlockElem) {
-        console.log("[UnlockChecker] Элемент unlockRemaining не найден");
-        return;
+    const unlockRemaining = document.querySelector(SELECTORS.UNLOCK_REMAINING);
+    if (!unlockRemaining) {
+        console.log(`${LOGGING.PREFIXES.UNLOCK} Элемент с оставшимися задачами не найден`);
+        return null;
     }
 
-    const unlockRemaining = parseInt(unlockElem.innerText.trim(), 10);
-    if (isNaN(unlockRemaining)) {
-        console.log("[UnlockChecker] Не удалось распарсить unlockRemaining");
-        return;
+    const text = unlockRemaining.textContent.trim();
+    const match = text.match(/\d+/);
+    if (!match) {
+        console.log(`${LOGGING.PREFIXES.UNLOCK} Не удалось извлечь число из текста: ${text}`);
+        return null;
     }
+
+    const remaining = parseInt(match[0]);
+    console.log(`${LOGGING.PREFIXES.UNLOCK} Осталось задач для разблокировки: ${remaining}`);
 
     // Обновляем кеш
-    writeGMNumber('ck_unlock_remaining', unlockRemaining);
-    console.log(`[UnlockChecker] Обновлён кеш unlockRemaining: ${unlockRemaining}`);
+    writeGMNumber('ck_unlock_remaining', remaining);
+    console.log(`${LOGGING.PREFIXES.UNLOCK} Обновлён кеш unlockRemaining: ${remaining}`);
 
     // Обновляем title
     const oldTitle = document.title.replace(/^\d+\s·\s/, '');
-    document.title = `${unlockRemaining} · ${oldTitle}`;
-    console.log(`[UnlockChecker] Обновлён title: "${document.title}"`);
+    document.title = `${remaining} · ${oldTitle}`;
+    console.log(`${LOGGING.PREFIXES.UNLOCK} Обновлён title: "${document.title}"`);
+
+    return remaining;
 } 
