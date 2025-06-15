@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Global Redirect & ChessKing Tracker & Message Control (GM-хранилище для кеша)
 // @namespace    http://tampermonkey.net/
-// @version      4.8.9
+// @version      4.8.10
 // @description  Тест: только график и логи
 // @author       vd
 // @match        https://chessking.com/*
