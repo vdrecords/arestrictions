@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChessKing Tracker (GM-хранилище, график, метрики, сообщения, берсерк)
 // @namespace    http://tampermonkey.net/
-// @version      4.9.10
+// @version      4.9.11
 // @description  Полная версия ChessKing Tracker
 // @author       vd
 // @match        https://chessking.com/*

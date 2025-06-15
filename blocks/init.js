@@ -4,9 +4,6 @@
 function init() {
     console.log(`[CK Init] init: инициализация скрипта`);
 
-    // Очищаем GM storage
-    window.clearGMStorage();
-
     // Проверяем текущий URL
     const currentUrl = window.location.href;
     console.log(`[CK Init] Текущий URL: ${currentUrl}`);
