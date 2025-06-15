@@ -9,19 +9,19 @@ function buildUIandStartUpdates() {
 window.buildUIandStartUpdates = buildUIandStartUpdates;
 
 function fetchAndUpdate() {
-    const SELECTORS = window.SELECTORS;
-    const STORAGE = window.STORAGE;
-    const readGMNumber = window.readGMNumber;
-    const writeGMNumber = window.writeGMNumber;
-    const checkUnlockRemaining = window.checkUnlockRemaining;
+    const getCourseStats = window.getCourseStats;
     const drawGraph = window.drawGraph;
     const updateMetrics = window.updateMetrics;
-    // Получаем текущие значения
-    const solvedToday = parseInt(document.querySelector(SELECTORS.SOLVED_TODAY).textContent.trim(), 10);
-    const unlockRemaining = checkUnlockRemaining();
+    const readGMNumber = window.readGMNumber;
+    const writeGMNumber = window.writeGMNumber;
+    const STORAGE = window.STORAGE;
+
+    const stats = getCourseStats();
+    if (!stats) return;
+    const { solvedToday, unlockRemaining } = stats;
+
     // Получаем предыдущие значения из кеша
     const prevSolvedToday = readGMNumber(STORAGE.KEYS.SOLVED_TODAY) || 0;
-    const prevUnlockRemaining = readGMNumber(STORAGE.KEYS.UNLOCK_REMAINING) || 0;
     // Вычисляем разницу
     const solvedDiff = solvedToday - prevSolvedToday;
     // Обновляем кеш
