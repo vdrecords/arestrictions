@@ -28,13 +28,13 @@ export const URLS = {
 };
 
 // ==== Селекторы ====
-export const SELECTORS = {
+window.SELECTORS = {
     SOLVED_STATS: 'span.course-overview__stats-item[title*="Решенное"] span',
     UNLOCK_REMAINING: 'span.course-overview__stats-item[title*="До разблокировки"] span'
 };
 
 // ==== Константы для UI ====
-export const UI = {
+window.UI = {
     OVERLAY_ID: 'ck-progress-overlay',
     CONTENT_ID: 'ck-progress-content',
     CANVAS_ID: 'ck-progress-canvas',
@@ -43,5 +43,5 @@ export const UI = {
     CANVAS_WIDTH: 400,
     CANVAS_HEIGHT: 150,
     GRAPH_MARGIN: 30,
-    UPDATE_INTERVAL: 60000 // 1 minute
+    UPDATE_INTERVAL: 60000
 }; 

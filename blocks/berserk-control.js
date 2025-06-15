@@ -18,7 +18,7 @@ function spendOnAction(actionCost) {
 }
 
 // ==== Функция: initBerserkControl ====
-export function initBerserkControl(btn) {
+function initBerserkControl(btn) {
     console.log(`${LOGGING.PREFIXES.BERSERK} initBerserkControl: инициализация контроля берсерка`);
 
     if (btn.dataset.berserkCtrlInit) {
@@ -69,9 +69,10 @@ export function initBerserkControl(btn) {
         refresh();
     }, true);
 }
+window.initBerserkControl = initBerserkControl;
 
 // ==== Функция: startBerserkControl ====
-export function startBerserkControl() {
+function startBerserkControl() {
     console.log(`${LOGGING.PREFIXES.BERSERK} startBerserkControl: запуск контроля берсерка`);
 
     if (!window.location.hostname.includes(URLS.LICHESS)) {
@@ -95,4 +96,5 @@ export function startBerserkControl() {
     } else {
         document.addEventListener('DOMContentLoaded', startObserver);
     }
-} 
+}
+window.startBerserkControl = startBerserkControl; 

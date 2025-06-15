@@ -8,7 +8,7 @@ import { filterMessages } from './message-control.js';
 import { startBerserkControl } from './berserk-control.js';
 
 // ==== Функция: init ====
-export function init() {
+function init() {
     console.log(`${LOGGING.PREFIXES.INIT} init: инициализация скрипта`);
 
     // Очищаем GM storage
@@ -36,4 +36,5 @@ export function init() {
     } else {
         console.log(`${LOGGING.PREFIXES.INIT} Неизвестный тип страницы`);
     }
-} 
+}
+window.init = init; 

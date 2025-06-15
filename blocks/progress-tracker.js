@@ -8,7 +8,7 @@ import { checkUnlockRemaining } from './unlock-checker.js';
 import { getCourseStats } from '../api.js';
 
 // ==== Функция: buildUIandStartUpdates ====
-export function buildUIandStartUpdates() {
+function buildUIandStartUpdates() {
     console.log(`${LOGGING.PREFIXES.PROGRESS} buildUIandStartUpdates: создаём UI и запускаем обновления`);
 
     // Создаём overlay
@@ -18,9 +18,10 @@ export function buildUIandStartUpdates() {
     fetchAndUpdate();
     setInterval(fetchAndUpdate, 60000);
 }
+window.buildUIandStartUpdates = buildUIandStartUpdates;
 
 // ==== Функция: fetchAndUpdate ====
-export function fetchAndUpdate() {
+function fetchAndUpdate() {
     console.log(`${LOGGING.PREFIXES.PROGRESS} fetchAndUpdate: обновляем данные`);
 
     // Получаем текущие значения через getCourseStats
@@ -81,4 +82,5 @@ export function fetchAndUpdate() {
     updateMetrics(data);
 
     console.log(`${LOGGING.PREFIXES.PROGRESS} Данные обновлены:`, data);
-} 
+}
+window.fetchAndUpdate = fetchAndUpdate; 

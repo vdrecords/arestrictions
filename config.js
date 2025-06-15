@@ -16,8 +16,8 @@
 // =================================
 // === Блок 1: Настройки скрипта ===
 // =================================
-export const SCRIPT = {
-    VERSION: '4.8.7',
+window.SCRIPT = {
+    VERSION: '4.8.8',
     NAME: 'ChessKing Tracker',
     NAMESPACE: 'https://github.com/vdrecords/arestrictions',
     AUTHOR: 'vd',
@@ -28,7 +28,7 @@ export const SCRIPT = {
 // =================================
 // === Блок 2: Настройки GM Storage ===
 // =================================
-export const STORAGE = {
+window.STORAGE = {
     KEYS: {
         TOTAL_SOLVED: 'ck_total_solved',
         SOLVED_TODAY: 'ck_solved_today',
@@ -43,7 +43,7 @@ export const STORAGE = {
 // =================================
 // === Блок 3: Настройки URL-адресов ===
 // =================================
-export const URLS = {
+window.URLS = {
     COURSE: 'chessking.com/course/',
     LEARN: 'learn.chessking.com/learning/course/',
     API: 'chessking.com/api/v1/course/',
@@ -71,7 +71,7 @@ export const URLS = {
 // =================================
 // === Блок 4: Настройки селекторов ===
 // =================================
-export const SELECTORS = {
+window.SELECTORS = {
     SOLVED_STATS: '.solved-stats',
     SOLVED_TODAY: '.solved-today',
     UNLOCK_REMAINING: '.unlock-remaining',
@@ -86,7 +86,7 @@ export const SELECTORS = {
 // =================================
 // === Блок 5: Настройки UI ===
 // =================================
-export const UI = {
+window.UI = {
     OVERLAY: {
         ID: 'ck-overlay',
         STYLE: {
@@ -147,7 +147,7 @@ export const UI = {
 // =================================
 // === Блок 6: Настройки графика ===
 // =================================
-export const GRAPH = {
+window.GRAPH = {
     MAX_POINTS: 10,
     UPDATE_INTERVAL: 60000 // 1 минута в миллисекундах
 };
@@ -155,7 +155,7 @@ export const GRAPH = {
 // =================================
 // === Блок 7: Настройки сообщений ===
 // =================================
-export const MESSAGES = {
+window.MESSAGES = {
     FILTERS: [
         'Поздравляем',
         'Вы решили',
@@ -168,7 +168,7 @@ export const MESSAGES = {
 // =================================
 // === Блок 8: Настройки берсерка ===
 // =================================
-export const BERSERK = {
+window.BERSERK = {
     COST: {
         PER_ACTION: 10
     },

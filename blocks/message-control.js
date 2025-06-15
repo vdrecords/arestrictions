@@ -4,7 +4,7 @@
 import { SELECTORS, MESSAGES, LOGGING } from '../config.js';
 
 // ==== Функция: hideMessage ====
-export function hideMessage(message) {
+function hideMessage(message) {
     console.log(`${LOGGING.PREFIXES.MESSAGE} hideMessage: скрываем сообщение "${message.textContent}"`);
 
     // Проверяем, нужно ли скрывать сообщение
@@ -20,9 +20,10 @@ export function hideMessage(message) {
         console.log(`${LOGGING.PREFIXES.MESSAGE} Сообщение скрыто`);
     }
 }
+window.hideMessage = hideMessage;
 
 // ==== Функция: filterMessages ====
-export function filterMessages() {
+function filterMessages() {
     console.log(`${LOGGING.PREFIXES.MESSAGE} filterMessages: фильтруем сообщения`);
 
     // Находим все сообщения
@@ -33,4 +34,5 @@ export function filterMessages() {
     messages.forEach(message => {
         hideMessage(message);
     });
-} 
+}
+window.filterMessages = filterMessages; 

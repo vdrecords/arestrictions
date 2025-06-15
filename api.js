@@ -5,7 +5,7 @@ import { URLS, SELECTORS, STORAGE, LOGGING } from './config.js';
 import { writeGMNumber, readGMNumber } from './storage.js';
 
 // ==== Функция: fetchCourseDataViaGM ====
-export async function fetchCourseDataViaGM(forceFetch = false) {
+function fetchCourseDataViaGM(forceFetch = false) {
     console.log(`${LOGGING.PREFIXES.API} fetchCourseDataViaGM: forceFetch =`, forceFetch);
 
     // Проверяем, есть ли кеш и не устарел ли он
@@ -58,9 +58,10 @@ export async function fetchCourseDataViaGM(forceFetch = false) {
         return null;
     }
 }
+window.fetchCourseDataViaGM = fetchCourseDataViaGM;
 
 // ==== Функция: getCourseStats ====
-export function getCourseStats() {
+function getCourseStats() {
     console.log(`${LOGGING.PREFIXES.API} getCourseStats: получаем статистику из DOM`);
 
     let totalSolved = 0;
@@ -106,4 +107,5 @@ export function getCourseStats() {
         console.error(`${LOGGING.PREFIXES.API} Ошибка при получении статистики:`, error);
         return null;
     }
-} 
+}
+window.getCourseStats = getCourseStats; 

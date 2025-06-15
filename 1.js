@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Global Redirect & ChessKing Tracker & Message Control (GM-хранилище для кеша)
 // @namespace    http://tampermonkey.net/
-// @version      4.8.8
+// @version      4.8.9
 // @description  1) Блок 1: Глобальная проверка «До разблокировки осталось решить».
 // @description  2) Блок 2: Трекер прогресса ChessKing (с графиком и метриками).
 // @description  3) Блок 3: Управление сообщениями (скрытие, удаление, фильтрация).
@@ -31,7 +31,6 @@
 // @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/init.js
 // ==/UserScript==
 
-// Вызов инициализации (init уже глобально доступен через @require)
 init();
 
 

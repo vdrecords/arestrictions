@@ -5,7 +5,7 @@ import { SELECTORS, LOGGING } from '../config.js';
 import { writeGMNumber } from '../storage.js';
 
 // ==== Функция: checkUnlockRemaining ====
-export function checkUnlockRemaining() {
+function checkUnlockRemaining() {
     console.log(`${LOGGING.PREFIXES.UNLOCK} checkUnlockRemaining: проверяем оставшиеся задачи для разблокировки`);
 
     const unlockRemaining = document.querySelector(SELECTORS.UNLOCK_REMAINING);
@@ -34,4 +34,5 @@ export function checkUnlockRemaining() {
     console.log(`${LOGGING.PREFIXES.UNLOCK} Обновлён title: "${document.title}"`);
 
     return remaining;
-} 
+}
+window.checkUnlockRemaining = checkUnlockRemaining; 

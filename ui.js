@@ -4,7 +4,7 @@
 import { UI, LOGGING } from './config.js';
 
 // ==== Функция: createOverlay ====
-export function createOverlay() {
+function createOverlay() {
     console.log(`${LOGGING.PREFIXES.UI} createOverlay: создаём overlay`);
 
     let overlay = document.getElementById(UI.OVERLAY.ID);
@@ -56,9 +56,10 @@ export function createOverlay() {
     }
     return overlay;
 }
+window.createOverlay = createOverlay;
 
 // ==== Функция: drawGraph ====
-export function drawGraph(graphDiffs, isTestMode = false) {
+function drawGraph(graphDiffs, isTestMode = false) {
     const canvas = document.getElementById(UI.CANVAS.ID);
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -118,9 +119,10 @@ export function drawGraph(graphDiffs, isTestMode = false) {
         ctx.fillText("Недостаточно данных", margin, margin + 20);
     }
 }
+window.drawGraph = drawGraph;
 
 // ==== Функция: updateMetrics ====
-export function updateMetrics(data, isTestMode = false) {
+function updateMetrics(data, isTestMode = false) {
     const metricsDiv = document.getElementById(UI.METRICS.ID);
     if (isTestMode) {
         metricsDiv.innerHTML = `
@@ -143,4 +145,5 @@ export function updateMetrics(data, isTestMode = false) {
         <div>Задач осталось: <strong>${remainingTasks}</strong></div>
         <div>До ${nextTh} решённых задач осталось: <strong>${milestoneText}</strong></div>
     `;
-} 
+}
+window.updateMetrics = updateMetrics; 
