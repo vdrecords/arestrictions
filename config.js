@@ -1,6 +1,6 @@
 // @version      4.8.7
 // @description  ChessKing Tracker - улучшенный трекер прогресса для ChessKing
-// @namespace    https://github.com/vd/arestrictions
+// @namespace    https://github.com/vdrecords/arestrictions
 // @author       vd
 // @match        https://chessking.com/course/*
 // @match        https://chessking.com/test/*
@@ -19,10 +19,10 @@
 export const SCRIPT = {
     VERSION: '4.8.7',
     NAME: 'ChessKing Tracker',
-    NAMESPACE: 'https://github.com/vd/arestrictions',
+    NAMESPACE: 'https://github.com/vdrecords/arestrictions',
     AUTHOR: 'vd',
-    UPDATE_URL: 'https://raw.githubusercontent.com/vd/arestrictions/main/1.js',
-    DOWNLOAD_URL: 'https://github.com/vd/arestrictions/raw/main/1.js'
+    UPDATE_URL: 'https://raw.githubusercontent.com/vdrecords/arestrictions/main/1.js',
+    DOWNLOAD_URL: 'https://github.com/vdrecords/arestrictions/raw/main/1.js'
 };
 
 // =================================
@@ -50,7 +50,7 @@ export const URLS = {
     MESSAGES: 'https://chessking.com/messages',
     LICHESS: 'lichess.org',
     GITHUB: {
-        BASE: 'https://raw.githubusercontent.com/vd/arestrictions/main/',
+        BASE: 'https://raw.githubusercontent.com/vdrecords/arestrictions/main/',
         MODULES: {
             CONSTANTS: 'constants.js',
             STORAGE: 'storage.js',

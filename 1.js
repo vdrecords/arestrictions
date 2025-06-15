@@ -16,18 +16,18 @@
 // @connect      chessking.com
 // @connect      lichess.org
 // @run-at       document-idle
-// @updateURL    https://raw.githubusercontent.com/vd/arestrictions/main/1.js
-// @downloadURL  https://raw.githubusercontent.com/vd/arestrictions/main/1.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/config.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/constants.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/storage.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/api.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/ui.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/unlock-checker.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/progress-tracker.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/message-control.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/berserk-control.js
-// @require      https://raw.githubusercontent.com/vd/arestrictions/main/blocks/init.js
+// @updateURL    https://raw.githubusercontent.com/vdrecords/arestrictions/main/1.js
+// @downloadURL  https://raw.githubusercontent.com/vdrecords/arestrictions/main/1.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/config.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/constants.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/storage.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/api.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/ui.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/unlock-checker.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/progress-tracker.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/message-control.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/berserk-control.js
+// @require      https://raw.githubusercontent.com/vdrecords/arestrictions/main/blocks/init.js
 
 import { SCRIPT } from './config.js';
 import { init } from './blocks/init.js';
