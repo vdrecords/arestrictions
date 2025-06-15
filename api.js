@@ -52,6 +52,7 @@ function fetchCourseDataViaGM(forceFetch = false) {
 window.fetchCourseDataViaGM = fetchCourseDataViaGM;
 
 function getCourseStats() {
+    console.log('[CK DEBUG] getCourseStats вызвана');
     const SELECTORS = window.SELECTORS;
     const STORAGE = window.STORAGE;
     const readGMNumber = window.readGMNumber;
@@ -75,7 +76,7 @@ function getCourseStats() {
                 }
             }
         } else {
-            // Всегда берем из хранилища, если не нашли на странице
+            console.log('[CK DEBUG] Пытаемся прочитать totalTasks и totalSolved из хранилища');
             totalTasks = readGMNumber(STORAGE.KEYS.TOTAL_TASKS) || 0;
             totalSolved = readGMNumber(STORAGE.KEYS.TOTAL_SOLVED) || 0;
             console.log('[CK DEBUG] totalTasks из хранилища:', totalTasks);
